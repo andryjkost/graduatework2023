@@ -1,6 +1,6 @@
 version: '2.2'
 services:
-  eds-odb-pg:
+  database:
     container_name: graduatework-pg
     hostname: localhost
     image: 'bitnami/postgresql:11.10.0-debian-10-r24'
@@ -11,6 +11,19 @@ services:
       POSTGRES_USER: graduatework
       POSTGRES_PASSWORD: graduatework
       POSTGRESQL_POSTGRES_PASSWORD: postgres
+  server:
+    container_name: server
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+    volumes:
+      - ./resources:/resources
+    restart: always
+
 volumes:
   postgresql_data:
     driver: local
