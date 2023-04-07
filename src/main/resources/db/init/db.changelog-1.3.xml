@@ -1,0 +1,18 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_column_user_id_in_token" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="user_id" tableName="token" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="token" schemaName="graduatework">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,125 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_user_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user" remarks="Информация о Пользователях" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+
+            <column name="username" type="VARCHAR(100)" remarks="Никнейм">
+                <constraints unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(255)" remarks="Почта">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="first_name" type="VARCHAR(100)"/>
+            <column name="last_name" type="VARCHAR(100)"/>
+            <column name="birthday" type="DATE"/>
+            <column name="description" type="VARCHAR(255)" remarks="Краткое описание"/>
+
+            <column name="created" type="timestamptz" defaultValue="transaction_timestamp()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated" type="timestamptz" defaultValue="transaction_timestamp()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(25)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_role_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="role" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="role" schemaName="graduatework">
+            <column name="id" type="BIGINT" >
+                <constraints primaryKey="true" unique="true"/>
+            </column>
+
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="created" type="timestamptz" defaultValue="transaction_timestamp()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated" type="timestamptz" defaultValue="transaction_timestamp()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(25)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_user_roles_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_roles" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_roles" remarks="Связь Пользователей с ролями" schemaName="graduatework">
+            <column name="user_id" type="BIGINT">
+            </column>
+
+            <column name="role_id" type="BIGINT">
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_roles"
+                                 constraintName="fk_user_roles_user"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="user_roles"
+                                 constraintName="fk_user_roles_role"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+    <changeSet id="create_token_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="token" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="token" remarks="Рефреш токены" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+            </column>
+
+            <column name="token" type="VARCHAR(255)">
+            </column>
+
+            <column name="tokenType" type="VARCHAR" defaultValue="BEARER">
+            </column>
+
+            <column name="updated" type="timestamptz" defaultValue="transaction_timestamp()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

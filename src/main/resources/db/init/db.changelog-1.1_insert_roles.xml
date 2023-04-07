@@ -1,0 +1,26 @@
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+	<changeSet id="add_roles" author="aokostin">
+		<preConditions>
+			<tableExists schemaName="graduatework" tableName="role"/>
+			<sqlCheck expectedResult="0">
+				select count(*) from role r
+				where r."name" = 'ROLE_ADMIN'
+			</sqlCheck>
+			<sqlCheck expectedResult="0">
+				select count(*) from role r
+				where r."name" = 'ROLE_USER'
+			</sqlCheck>
+		</preConditions>
+		<sql >
+			INSERT INTO graduatework.role (id,name) VALUES  ('1','ROLE_ADMIN'),
+	 			('2','ROLE_USER');
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>
+
+

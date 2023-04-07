@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE:jdbc:postgresql://localhost:5438/graduatework}
+    username: ${SPRING_DATASOURCE_USERNAME:graduatework}
+    password: ${SPRING_DATASOURCE_PASSWORD:graduatework}
+    driver-class-name: org.postgresql.Driver
+    maximum-pool-size: 10
+  liquibase:
+    changeLogFile: db/changelog_master.xml
+    enabled: true
+    change-log: classpath:db/changelog_master.xml
+    url: jdbc:postgresql://localhost:5438/graduatework
+    user: graduatework
+    password: graduatework
+    default-schema: graduatework
+    liquibase-schema: graduatework
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret:
+    access: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
+    refresh: =zL1HB3Pch05Avfynovxrf/kpF9O2m4NCWKJUjEp27s9J2jEG3ifiKCGylaZ8fDeoONSTJP/wAzKawB8F9rOMNg==
+    expired: 3600000
