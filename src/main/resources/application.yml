@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE:jdbc:postgresql://localhost:5438/graduatework}
-    username: ${SPRING_DATASOURCE_USERNAME:graduatework}
-    password: ${SPRING_DATASOURCE_PASSWORD:graduatework}
+    url: jdbc:postgresql://localhost:5438/graduatework
+    username: graduatework
+    password: graduatework
     driver-class-name: org.postgresql.Driver
     maximum-pool-size: 10
   liquibase:
