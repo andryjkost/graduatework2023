@@ -6,9 +6,9 @@ db:
 
 spring:
   datasource:
-    url: ${Ddb.postgres.graduatework.url:${db.url}}
-    username:  ${Ddb.postgres.graduatework.username:${db.user}}
-    password:  ${Ddb.postgres.graduatework.password:${db.password}}
+    url: ${db.postgres.graduatework.url:${db.url}}
+    username: ${db.postgres.graduatework.username:${db.user}}
+    password: ${db.postgres.graduatework.password:${db.password}}
     driver-class-name: org.postgresql.Driver
     maximum-pool-size: 10
   liquibase:
