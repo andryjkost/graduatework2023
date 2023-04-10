@@ -1,8 +1,14 @@
+
+db:
+  url: jdbc:postgresql://localhost:5438/graduatework
+  user: graduatework
+  password: graduatework
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5438/graduatework
-    username: graduatework
-    password: graduatework
+    url: ${Ddb.postgres.graduatework.url:${db.url}}
+    username:  ${Ddb.postgres.graduatework.username:${db.user}}
+    password:  ${Ddb.postgres.graduatework.password:${db.password}}
     driver-class-name: org.postgresql.Driver
     maximum-pool-size: 10
   liquibase:
