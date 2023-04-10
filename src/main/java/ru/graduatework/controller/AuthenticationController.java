@@ -42,6 +42,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
+    @Deprecated
     public ResponseEntity<AuthenticationResponse> getNewRefreshToken(HttpServletRequest request, @RequestBody RefreshJwtRequest refreshJwtRequest) throws IOException {
         return ResponseEntity.ok(service.refresh(request, refreshJwtRequest.getRefreshToken()));
     }
