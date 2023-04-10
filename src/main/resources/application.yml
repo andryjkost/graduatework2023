@@ -9,9 +9,6 @@ spring:
     changeLogFile: db/changelog_master.xml
     enabled: true
     change-log: classpath:db/changelog_master.xml
-    url: jdbc:postgresql://localhost:5438/graduatework
-    user: graduatework
-    password: graduatework
     default-schema: graduatework
     liquibase-schema: graduatework
   jpa:

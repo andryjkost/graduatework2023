@@ -14,9 +14,9 @@
     <name>graduatework</name>
     <description>graduatework</description>
     <properties>
-        <db.postgres.graduatework.username>graduatework</db.postgres.graduatework.username>
-        <db.postgres.graduatework.password>graduatework</db.postgres.graduatework.password>
-        <db.postgres.graduatework.url>jdbc:postgresql://localhost:5438/graduatework</db.postgres.graduatework.url>
+        <db.postgres.graduatework.username></db.postgres.graduatework.username>
+        <db.postgres.graduatework.password></db.postgres.graduatework.password>
+        <db.postgres.graduatework.url></db.postgres.graduatework.url>
         <java.version>17</java.version>
     </properties>
     <dependencies>
@@ -152,6 +152,10 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <configuration>
+                    <url>${db.postgres.graduatework.url}</url>
+                    <driver>org.postgresql.Driver</driver>
+                    <username>${db.postgres.graduatework.username}</username>
+                    <password>${db.postgres.graduatework.password}</password>
                     <propertyFile>src/main/resources/application.yml</propertyFile>
                 </configuration>
                 <executions>
