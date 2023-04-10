@@ -2,7 +2,7 @@ name: СI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 jobs:
 
   deploy:
@@ -23,11 +23,11 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: Generate the package
-        run: mvn -B package --file server/pom.xml -Dclient -Dskiptest
+        run: mvn clean install -Ddb.postgres.graduatework.url=jdbc:postgresql://84.252.73.203:5438/graduatework -Ddb.postgres.graduatework.username=graduatework -Ddb.postgres.graduatework.password=graduatework
       - name: Deploy
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
-          cd /home/github
-          rm -rf mt-0.0.1-SNAPSHOT.war
+          cd /home/
+          rm -rf graduatework-0.0.1-SNAPSHOT.jar
           ENDSSH
-          scp ./server/target/mt-0.0.1-SNAPSHOT.war ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/github/mt-0.0.1-SNAPSHOT.war
+          scp ./server/target/graduatework-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/graduatework-0.0.1-SNAPSHOT.jar
