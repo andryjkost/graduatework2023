@@ -1,4 +1,7 @@
-
+server:
+  error:
+    whitelabel:
+      enabled: false
 db:
   url: jdbc:postgresql://localhost:5438/graduatework
   user: graduatework

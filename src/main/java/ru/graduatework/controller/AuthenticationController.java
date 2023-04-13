@@ -1,5 +1,6 @@
 package ru.graduatework.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(description = "Работа с авторизацией и аутентификацией", name = "AuthenticationController")
 public class AuthenticationController {
 
     private final AuthenticationService service;
