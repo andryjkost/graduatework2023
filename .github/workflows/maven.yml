@@ -30,4 +30,4 @@ jobs:
           cd /root/
           rm -rf graduatework-0.0.1-SNAPSHOT.jar
           ENDSSH
-          scp ./server/target/graduatework-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/graduatework-0.0.1-SNAPSHOT.jar
+          scp ./target/graduatework-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/graduatework-0.0.1-SNAPSHOT.jar
