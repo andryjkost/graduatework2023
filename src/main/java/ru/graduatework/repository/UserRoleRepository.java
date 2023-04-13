@@ -3,12 +3,9 @@ package ru.graduatework.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.graduatework.entity.Role;
+import ru.graduatework.common.Role;
 import ru.graduatework.jdbc.PostgresOperatingContext;
-import ru.graduatework.jooq.tables.records.RoleRecord;
 import ru.graduatework.jooq.tables.records.UserRolesRecord;
-
-import java.util.UUID;
 
 import static ru.graduatework.jooq.Tables.ROLE;
 import static ru.graduatework.jooq.Tables.USER_ROLES;

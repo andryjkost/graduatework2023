@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.graduatework.entity.TokenType;
+import ru.graduatework.common.TokenType;
 
 @Data
 @Builder

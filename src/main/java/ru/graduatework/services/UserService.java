@@ -2,11 +2,10 @@ package ru.graduatework.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.graduatework.controller.dto.RegisterRequest;
 import ru.graduatework.controller.dto.UserWithRoleResponseDto;
-import ru.graduatework.entity.Role;
+import ru.graduatework.common.Role;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.jooq.tables.records.UserRecord;
 import ru.graduatework.mapper.UserDtoMapper;

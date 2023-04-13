@@ -2,7 +2,7 @@ package ru.graduatework.controller.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.graduatework.entity.Role;
+import ru.graduatework.common.Role;
 
 import java.util.List;
 

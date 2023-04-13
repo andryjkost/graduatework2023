@@ -1,4 +1,4 @@
-package ru.graduatework.auth;
+package ru.graduatework.services;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;

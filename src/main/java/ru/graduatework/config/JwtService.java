@@ -30,15 +30,23 @@ public class JwtService {
     private String jwtRefreshSecret;
 
 
-    public String extractUsername(String token) {
+    public String extractAccessUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public Date extractRefreshExpirationTime(String token){
+        return extractRefreshClaim(token, Claims::getExpiration);
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+        final Claims claims = extractAllClaimsAccess(token);
         return claimsResolver.apply(claims);
     }
 
+    public <T> T extractRefreshClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaimsRefresh(token);
+        return claimsResolver.apply(claims);
+    }
 
     public String generateAccessToken(
             @NonNull UserWithRoleResponseDto userDetails
@@ -53,6 +61,7 @@ public class JwtService {
                 .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
                 .setExpiration(accessExpiration)
                 .signWith(getAccessSignInKey(), SignatureAlgorithm.HS256)
+                .claim("id", userDetails.getId())
                 .claim("roles", userDetails.getRoles())
                 .claim("firstName", userDetails.getFirstName())
                 .claim("lastName", userDetails.getLastName())
@@ -72,7 +81,7 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
 
-        final String username = extractUsername(token);
+        final String username = extractAccessUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
@@ -112,10 +121,19 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaimsAccess(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getAccessSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private Claims extractAllClaimsRefresh(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getRefreshSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

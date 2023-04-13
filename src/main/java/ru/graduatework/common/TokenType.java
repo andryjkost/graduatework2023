@@ -1,4 +1,4 @@
-package ru.graduatework.entity;
+package ru.graduatework.common;
 
 public enum TokenType {
     BEARER
