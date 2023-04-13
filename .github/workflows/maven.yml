@@ -26,7 +26,7 @@ jobs:
         run: mvn clean install -Ddb.postgres.graduatework.url=jdbc:postgresql://84.252.73.203:5438/graduatework -Ddb.postgres.graduatework.username=graduatework -Ddb.postgres.graduatework.password=graduatework
       - name: Deploy
         run: |
-          ssh-o PreferredAuthentications=${{ secrets.PASSWORD }}  ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+          ssh-o PreferredAuthentications=${{ secrets.SSH_PASSWORD }}  ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
           cd /root/
           rm -rf graduatework-0.0.1-SNAPSHOT.jar
           ENDSSH
