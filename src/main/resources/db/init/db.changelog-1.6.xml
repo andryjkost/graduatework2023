@@ -1,0 +1,23 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_field_of_activity_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="field_of_activity" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="field_of_activity" remarks="Таблица сфер интересов" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)" remarks="Название сферы интересов">
+                <constraints unique="true"/>
+            </column>
+            <column name="description" type="VARCHAR" remarks="Описание"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,65 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_field_of_activity_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="field_of_activity" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="field_of_activity" remarks="Таблица сфер интересов" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)" remarks="Название сферы интересов">
+                <constraints unique="true"/>
+            </column>
+            <column name="description" type="VARCHAR" remarks="Описание"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_user_field_of_activity_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_field_of_activity" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_field_of_activity" remarks="Связка сферы интересов и юзеров" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="field_of_activity_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_field_of_activity"
+                                 constraintName="fk_user_field_of_activity_user"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+
+        <addForeignKeyConstraint baseColumnNames="field_of_activity_id"
+                                 baseTableName="user_field_of_activity"
+                                 constraintName="fk_user_field_of_activity_field_of_activity"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="field_of_activity"/>
+
+    </changeSet>
+
+    <changeSet id="rename_user_roles" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_role" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <renameTable oldTableName="user_roles" newTableName="user_role"/>
+    </changeSet>
+
+
+</databaseChangeLog>

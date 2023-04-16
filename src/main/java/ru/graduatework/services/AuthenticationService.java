@@ -3,20 +3,14 @@ package ru.graduatework.services;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import ru.graduatework.config.JwtService;
-import ru.graduatework.controller.dto.AuthenticationRequest;
-import ru.graduatework.controller.dto.AuthenticationResponse;
-import ru.graduatework.controller.dto.RegisterRequest;
+import ru.graduatework.controller.dto.AuthenticationRequestDto;
+import ru.graduatework.controller.dto.AuthenticationResponseDto;
+import ru.graduatework.controller.dto.RegisterRequestDto;
 import ru.graduatework.error.AuthException;
-import ru.graduatework.repository.TokenRepository;
-import ru.graduatework.repository.UserRepository;
-import ru.graduatework.services.TokenService;
-import ru.graduatework.services.UserService;
 
 import java.io.IOException;
 
@@ -29,7 +23,7 @@ public class AuthenticationService {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponseDto register(RegisterRequestDto request) {
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         var newUser = userService.createUser(request);
 
@@ -38,13 +32,13 @@ public class AuthenticationService {
 
 //        saveUserRefreshToken(newUser.getId(), jwtAccessToken);
         tokenService.saveRefreshToken(newUser.getId(), jwtRefreshToken);
-        return AuthenticationResponse.builder()
+        return AuthenticationResponseDto.builder()
                 .accessToken(jwtAccessToken)
                 .refreshToken(jwtRefreshToken)
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponseDto authenticate(AuthenticationRequestDto request) {
 
         //нужна ошибка если нет юзера
         var user = userService.getByEmail(request.getEmail());
@@ -54,7 +48,7 @@ public class AuthenticationService {
 
             tokenService.deleteByUserId(user.getId());
             tokenService.saveRefreshToken(user.getId(), jwtRefreshToken);
-            return AuthenticationResponse.builder()
+            return AuthenticationResponseDto.builder()
                     .accessToken(jwtAccessToken)
                     .refreshToken(jwtRefreshToken)
                     .build();
@@ -64,7 +58,7 @@ public class AuthenticationService {
         }
     }
 
-    public AuthenticationResponse getAccessToken(String jwtRefreshToken) {
+    public AuthenticationResponseDto getAccessToken(String jwtRefreshToken) {
         if (jwtService.validateRefreshToken(jwtRefreshToken)) {
             final Claims claims = jwtService.getRefreshClaims(jwtRefreshToken);
             final String email = claims.getSubject();
@@ -74,16 +68,16 @@ public class AuthenticationService {
                 final var user = userService.getByEmail(email);
 //                        .orElseThrow(() -> new AuthException("Пользователь не найден"));
                 final String accessToken = jwtService.generateAccessToken(user);
-                return AuthenticationResponse.builder()
+                return AuthenticationResponseDto.builder()
                         .accessToken(accessToken)
                         .refreshToken(null)
                         .build();
             }
         }
-        return new AuthenticationResponse(null, null);
+        return new AuthenticationResponseDto(null, null);
     }
 
-    public AuthenticationResponse refresh(HttpServletRequest request, String jwtRefreshToken) throws IOException {
+    public AuthenticationResponseDto refresh(HttpServletRequest request, String jwtRefreshToken) throws IOException {
 
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String jwtAccessToken;
@@ -108,7 +102,7 @@ public class AuthenticationService {
 
                 tokenService.deleteByUserId(user.getId());
                 tokenService.saveRefreshToken(user.getId(), jwtRefreshToken);
-                return AuthenticationResponse.builder()
+                return AuthenticationResponseDto.builder()
                         .accessToken(accessToken)
                         .refreshToken(newRefreshToken)
                         .build();

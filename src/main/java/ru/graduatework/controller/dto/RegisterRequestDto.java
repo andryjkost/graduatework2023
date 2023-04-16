@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import ru.graduatework.common.Role;
+import ru.graduatework.common.ValidationUtils;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
@@ -16,13 +18,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Запрос на регистрацию")
-public class RegisterRequest {
+public class RegisterRequestDto {
 
+    @Pattern(regexp = ValidationUtils.FIO_VALIDATION_PATTERN, message = "Неверный формат")
     private String firstname;
 
+    @Pattern(regexp = ValidationUtils.FIO_VALIDATION_PATTERN, message = "Неверный формат")
     private String lastname;
 
     @Schema(description = "Почта для регистрации")
+    @Pattern(regexp = ValidationUtils.EMAIL_VALIDATION_PATTERN, message = "Адрес электронной почты должен быть корректным")
     @NotNull
     private String email;
 

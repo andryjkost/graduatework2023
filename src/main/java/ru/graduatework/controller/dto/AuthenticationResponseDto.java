@@ -10,7 +10,7 @@ import ru.graduatework.common.TokenType;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
+public class AuthenticationResponseDto {
 
     private final String type = TokenType.BEARER.toString();
     private String accessToken;

@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
-import ru.graduatework.controller.dto.AuthenticationRequest;
-import ru.graduatework.controller.dto.AuthenticationResponse;
+import ru.graduatework.controller.dto.AuthenticationRequestDto;
+import ru.graduatework.controller.dto.AuthenticationResponseDto;
 import ru.graduatework.services.AuthenticationService;
-import ru.graduatework.controller.dto.RefreshJwtRequest;
-import ru.graduatework.controller.dto.RegisterRequest;
+import ru.graduatework.controller.dto.RefreshJwtRequestDto;
+import ru.graduatework.controller.dto.RegisterRequestDto;
 
 import java.io.IOException;
 
@@ -28,30 +28,30 @@ public class AuthenticationController {
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody @NonNull RegisterRequest request
+    public ResponseEntity<AuthenticationResponseDto> register(
+            @RequestBody @NonNull RegisterRequestDto request
     ) {
         return ResponseEntity.ok(service.register(request));
     }
 
     @Operation(summary = "Аутентификация пользователя")
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody @NonNull AuthenticationRequest request
+    public ResponseEntity<AuthenticationResponseDto> authenticate(
+            @RequestBody @NonNull AuthenticationRequestDto request
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
     @Operation(summary = "Получение NewAccessToken по refreshToken")
     @PostMapping("/token")
-    public ResponseEntity<AuthenticationResponse> getNewAccessToken(@RequestBody RefreshJwtRequest request) {
+    public ResponseEntity<AuthenticationResponseDto> getNewAccessToken(@RequestBody RefreshJwtRequestDto request) {
         return ResponseEntity.ok(service.getAccessToken(request.getRefreshToken()));
     }
 
     @PostMapping("/refresh")
     @Deprecated
-    public ResponseEntity<AuthenticationResponse> getNewRefreshToken(HttpServletRequest request, @RequestBody RefreshJwtRequest refreshJwtRequest) throws IOException {
-        return ResponseEntity.ok(service.refresh(request, refreshJwtRequest.getRefreshToken()));
+    public ResponseEntity<AuthenticationResponseDto> getNewRefreshToken(HttpServletRequest request, @RequestBody RefreshJwtRequestDto refreshJwtRequestDto) throws IOException {
+        return ResponseEntity.ok(service.refresh(request, refreshJwtRequestDto.getRefreshToken()));
     }
 
 }

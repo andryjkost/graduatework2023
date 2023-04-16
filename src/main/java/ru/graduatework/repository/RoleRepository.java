@@ -20,7 +20,7 @@ public class RoleRepository {
 
     public List<Role> getListRoleByUserId(PostgresOperatingContext ctx, Long id){
         return ctx.dsl()
-                .selectFrom(ROLE.join(USER_ROLES).on(ROLE.ID.eq(USER_ROLES.ROLE_ID).and(USER_ROLES.USER_ID.eq(id))))
+                .selectFrom(ROLE.join(USER_ROLE).on(ROLE.ID.eq(USER_ROLE.ROLE_ID).and(USER_ROLE.USER_ID.eq(id))))
                 .fetchInto(RoleRecord.class).stream().map(record -> Role.valueOf(record.getName())).collect(Collectors.toList());
     }
 }

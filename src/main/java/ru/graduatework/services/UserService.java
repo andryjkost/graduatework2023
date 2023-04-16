@@ -3,12 +3,15 @@ package ru.graduatework.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.graduatework.controller.dto.RegisterRequest;
+import reactor.core.publisher.Mono;
+import ru.graduatework.controller.dto.RegisterRequestDto;
+import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.UserWithRoleResponseDto;
 import ru.graduatework.common.Role;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.jooq.tables.records.UserRecord;
 import ru.graduatework.mapper.UserDtoMapper;
+import ru.graduatework.repository.FieldOfActivityRepository;
 import ru.graduatework.repository.RoleRepository;
 import ru.graduatework.repository.UserRepository;
 import ru.graduatework.repository.UserRoleRepository;
@@ -25,6 +28,15 @@ public class UserService {
     private final PostgresOperatingDb db;
     private final UserDtoMapper mapper;
     private final UserRoleRepository userRoleRepository;
+    private final FieldOfActivityRepository fieldOfActivityRepository;
+
+    public Mono<UserWithFieldsOfActivityResponseDto> getById(Long id){
+        return db.execAsync(ctx->{
+            var user = mapper.mapById(userRepo.getById(ctx,id));
+            user.setFieldOfActivitys(fieldOfActivityRepository.getListFieldOfActivityByUserId(ctx, id));
+            return user;
+        });
+    }
 
     public UserWithRoleResponseDto getByEmail(String email) {
         return db.execute(ctx -> {
@@ -34,7 +46,7 @@ public class UserService {
         });
     }
 
-    public UserWithRoleResponseDto createUser(RegisterRequest request) {
+    public UserWithRoleResponseDto createUser(RegisterRequestDto request) {
         UserRecord newUser = new UserRecord();
 
         newUser.setId(UUID.randomUUID().getLeastSignificantBits());
