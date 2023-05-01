@@ -38,6 +38,7 @@ public class SecurityConfiguration {
         corsConfiguration.setExposedHeaders(List.of("Authorization"));
 
         http
+                .cors().configurationSource(request ->corsConfiguration ).and()
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
@@ -51,7 +52,6 @@ public class SecurityConfiguration {
                 .and()
 //                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .cors().configurationSource(request ->corsConfiguration )
 //                .logout()
 //                .logoutUrl("/api/v1/auth/logout")
 //                .addLogoutHandler(logoutHandler)

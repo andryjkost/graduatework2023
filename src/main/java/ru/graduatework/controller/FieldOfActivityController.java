@@ -14,6 +14,7 @@ import ru.graduatework.services.FieldOfActivityService;
 @RestController
 @RequestMapping("/api/v1/activity")
 @RequiredArgsConstructor
+@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 @Tag(description = "Работа со сферами деятельности", name = "FieldOfActivityController")
 public class FieldOfActivityController {
 

@@ -24,6 +24,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     public AuthenticationResponseDto register(RegisterRequestDto request) {
+//        if()
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         var newUser = userService.createUser(request);
 
