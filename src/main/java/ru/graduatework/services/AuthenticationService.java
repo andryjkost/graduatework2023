@@ -45,7 +45,7 @@ public class AuthenticationService {
         var user = userService.getByEmail(request.getEmail());
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())){
             var jwtAccessToken = jwtService.generateAccessToken(user);
-            var jwtRefreshToken = jwtService.generateAccessToken(user);
+            var jwtRefreshToken = jwtService.generateRefreshToken(user);
 
             tokenService.deleteByUserId(user.getId());
             tokenService.saveRefreshToken(user.getId(), jwtRefreshToken);
