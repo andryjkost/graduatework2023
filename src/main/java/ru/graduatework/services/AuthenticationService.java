@@ -3,19 +3,27 @@ package ru.graduatework.services;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.AuthenticationRequestDto;
 import ru.graduatework.controller.dto.AuthenticationResponseDto;
 import ru.graduatework.controller.dto.RegisterRequestDto;
 import ru.graduatework.error.AuthException;
+import ru.graduatework.error.CommonException;
 
 import java.io.IOException;
 
+import static ru.graduatework.error.Code.USER_DUPLICATE_EMAIL;
+import static ru.graduatework.error.Code.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
 
     private final JwtService jwtService;
@@ -23,27 +31,34 @@ public class AuthenticationService {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationResponseDto register(RegisterRequestDto request) {
-//        if()
+    public Mono<AuthenticationResponseDto> register(RegisterRequestDto request) {
+        var checkUser = userService.getUserByEmail(request.getEmail()) != null;
+
+        if (checkUser) {
+            log.error("User duplicated by email");
+            throw CommonException.builder().code(USER_DUPLICATE_EMAIL).userMessage("Пользователь c таким почтовым адресом уже существует").techMessage("User duplicated by email").httpStatus(HttpStatus.BAD_REQUEST).build();
+        }
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         var newUser = userService.createUser(request);
 
         var jwtAccessToken = jwtService.generateAccessToken(newUser);
         var jwtRefreshToken = jwtService.generateRefreshToken(newUser);
 
-//        saveUserRefreshToken(newUser.getId(), jwtAccessToken);
         tokenService.saveRefreshToken(newUser.getId(), jwtRefreshToken);
-        return AuthenticationResponseDto.builder()
+        return Mono.just(AuthenticationResponseDto.builder()
                 .accessToken(jwtAccessToken)
                 .refreshToken(jwtRefreshToken)
-                .build();
+                .build());
     }
 
     public AuthenticationResponseDto authenticate(AuthenticationRequestDto request) {
 
         //нужна ошибка если нет юзера
         var user = userService.getByEmail(request.getEmail());
-        if (passwordEncoder.matches(request.getPassword(), user.getPassword())){
+        if (user == null) {
+            throw CommonException.builder().code(USER_NOT_FOUND).userMessage("Пользователь c такой почтой не существует").techMessage("User with email: " + request.getEmail() + " not found").httpStatus(HttpStatus.BAD_REQUEST).build();
+        }
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             var jwtAccessToken = jwtService.generateAccessToken(user);
             var jwtRefreshToken = jwtService.generateRefreshToken(user);
 
@@ -53,8 +68,7 @@ public class AuthenticationService {
                     .accessToken(jwtAccessToken)
                     .refreshToken(jwtRefreshToken)
                     .build();
-        }
-        else {
+        } else {
             throw new AuthException("Неправильный пароль");
         }
     }

@@ -30,13 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String userEmail;
+//        final String userEmail;
         if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractAccessUsername(jwt);
+//        userEmail = jwtService.extractAccessUsername(jwt);
 //        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 //            var userDetails = this.userService.getByEmail(userEmail);
 //            var isTokenValid = tokenService.getByToken(jwt).getExpired();

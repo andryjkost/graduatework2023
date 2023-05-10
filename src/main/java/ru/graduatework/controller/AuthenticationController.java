@@ -6,14 +6,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpServletRequest;
+import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.AuthenticationRequestDto;
 import ru.graduatework.controller.dto.AuthenticationResponseDto;
 import ru.graduatework.services.AuthenticationService;
 import ru.graduatework.controller.dto.RefreshJwtRequestDto;
 import ru.graduatework.controller.dto.RegisterRequestDto;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -26,10 +24,10 @@ public class AuthenticationController {
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDto> register(
+    public Mono<AuthenticationResponseDto> register(
             @RequestBody @NonNull RegisterRequestDto request
     ) {
-        return ResponseEntity.ok(service.register(request));
+        return service.register(request);
     }
 
     @Operation(summary = "Аутентификация пользователя")
@@ -46,10 +44,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.getAccessToken(request.getRefreshToken()));
     }
 
-    @PostMapping("/refresh")
-    @Deprecated
-    public ResponseEntity<AuthenticationResponseDto> getNewRefreshToken(HttpServletRequest request, @RequestBody RefreshJwtRequestDto refreshJwtRequestDto) throws IOException {
-        return ResponseEntity.ok(service.refresh(request, refreshJwtRequestDto.getRefreshToken()));
-    }
+//    @PostMapping("/refresh")
+//    @Deprecated
+//    public ResponseEntity<AuthenticationResponseDto> getNewRefreshToken(HttpServletRequest request, @RequestBody RefreshJwtRequestDto refreshJwtRequestDto) throws IOException {
+//        return ResponseEntity.ok(service.refresh(request, refreshJwtRequestDto.getRefreshToken()));
+//    }
 
 }
