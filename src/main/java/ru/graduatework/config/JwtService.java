@@ -162,4 +162,9 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public Long getUserIdFromJwt(String jwt){
+        final Claims claims = getAccessClaims(jwt);
+        return Long.parseLong(claims.getId());
+    }
 }

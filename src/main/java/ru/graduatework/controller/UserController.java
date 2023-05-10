@@ -1,9 +1,9 @@
 package ru.graduatework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
@@ -19,11 +19,11 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Получение информации о Пользователе по глобальному идентификатору")
-    @GetMapping("/{id}")
-    Mono<UserWithFieldsOfActivityResponseDto> getById(
-            @Parameter(description = "Глобальный идентификатор потребителя") @PathVariable Long id
+    @Operation(summary = "Получение информации о Пользователе")
+    @GetMapping("")
+    Mono<UserWithFieldsOfActivityResponseDto> getFullUserByToken(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken
     ){
-        return userService.getById(id);
+        return userService.getFullUserByToken(authToken);
     }
 }
