@@ -1,0 +1,41 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_subscription_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="subscription" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="subscription" remarks="Подписки пользователей на курсы" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="course_id" type="BIGINT" remarks="Идентификатор курса"/>
+            <column name="user_id" type="BIGINT" remarks="Идентификатор пользователя"/>
+            <column name="subscribed_at" type="timestamptz" remarks="Дата подписки"/>
+            <column name="unsubscribed_at" type="timestamptz" remarks="Дата отписки"/>
+            <column name="state" type="VARCHAR(255)" remarks="Статус подписки"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="course_id"
+                                 baseTableName="subscription"
+                                 constraintName="fk_subscription_course_id"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="subscription"
+                                 constraintName="fk_subscription_user_id"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+
+    </changeSet>
+
+</databaseChangeLog>

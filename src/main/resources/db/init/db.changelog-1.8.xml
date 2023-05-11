@@ -1,0 +1,38 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_author_article_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="author_article" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="author_article" remarks="Связка статей и авторов" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="author_id" type="BIGINT"/>
+            <column name="article_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="author_id"
+                                 baseTableName="author_article"
+                                 constraintName="fk_author_article_author"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="author"/>
+
+        <addForeignKeyConstraint baseColumnNames="article_id"
+                                 baseTableName="author_article"
+                                 constraintName="fk_author_article_article"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="article"/>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,138 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_author_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="author" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="author" remarks="Информация об Авторах" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+
+            <column name="username" type="VARCHAR(100)" remarks="Никнейм">
+                <constraints unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(255)" remarks="Почта">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="first_name" type="VARCHAR(100)"/>
+            <column name="last_name" type="VARCHAR(100)"/>
+            <column name="birthday" type="DATE"/>
+            <column name="description" type="VARCHAR(255)" remarks="Краткое описание"/>
+
+            <column name="created" type="timestamptz" defaultValue="transaction_timestamp()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated" type="timestamptz" defaultValue="transaction_timestamp()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(25)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_author_field_of_activity_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="author_field_of_activity" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="author_field_of_activity" remarks="Связка сферы интересов и авторов" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="author_id" type="BIGINT"/>
+            <column name="field_of_activity_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="author_id"
+                                 baseTableName="author_field_of_activity"
+                                 constraintName="fk_author_field_of_activity_author"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="author"/>
+
+        <addForeignKeyConstraint baseColumnNames="field_of_activity_id"
+                                 baseTableName="author_field_of_activity"
+                                 constraintName="fk_author_field_of_activity_field_of_activity"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="field_of_activity"/>
+
+    </changeSet>
+
+    <changeSet id="add_author_course_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="author_course" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="author_course" remarks="Связка курсов и авторов" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="author_id" type="BIGINT"/>
+            <column name="course_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="author_id"
+                                 baseTableName="author_course"
+                                 constraintName="fk_author_course_author"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="author"/>
+
+        <addForeignKeyConstraint baseColumnNames="course_id"
+                                 baseTableName="author_course"
+                                 constraintName="fk_author_course_course"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course"/>
+    </changeSet>
+
+    <changeSet id="add_author_networking_event_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="author_networking_event" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="author_networking_event" remarks="Связка мероприятий и авторов" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="author_id" type="BIGINT"/>
+            <column name="networking_event_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="author_id"
+                                 baseTableName="author_networking_event"
+                                 constraintName="fk_author_networking_event_author"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="author"/>
+
+        <addForeignKeyConstraint baseColumnNames="networking_event_id"
+                                 baseTableName="author_networking_event"
+                                 constraintName="fk_author_networking_event_networking_event"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="networking_event"/>
+    </changeSet>
+
+</databaseChangeLog>
