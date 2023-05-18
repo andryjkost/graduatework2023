@@ -4,15 +4,11 @@ package ru.graduatework.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.graduatework.common.Role;
 import ru.graduatework.controller.dto.FieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingContext;
-import ru.graduatework.jooq.tables.records.FieldOfActivityRecord;
-import ru.graduatework.jooq.tables.records.RoleRecord;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.graduatework.jooq.Tables.*;
 

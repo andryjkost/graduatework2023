@@ -3,10 +3,10 @@ package ru.graduatework.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.graduatework.common.Role;
+
 import ru.graduatework.jdbc.PostgresOperatingContext;
-import ru.graduatework.jooq.tables.records.UserRecord;
 import ru.graduatework.jooq.tables.records.UserRoleRecord;
+import ru.graduatework.common.Role;
 
 import static ru.graduatework.jooq.Tables.ROLE;
 import static ru.graduatework.jooq.Tables.USER_ROLE;
