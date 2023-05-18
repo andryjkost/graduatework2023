@@ -28,13 +28,11 @@ public class PhraseServiceErrorHandler {
     }
 
 
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.error("MethodArgumentTypeMismatchException: {}", ex.toString());
         return Mono.just(new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.ARGUMENT_TYPE_MISMATCH).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST));
     }
-
 
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -44,13 +42,11 @@ public class PhraseServiceErrorHandler {
     }
 
 
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.error("HttpMessageNotReadableException: {}", ex.toString());
         return Mono.just(new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.NOT_READABLE).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST));
     }
-
 
 
     @ExceptionHandler(MissingRequestHeaderException.class)

@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import ru.graduatework.common.Role;
 import ru.graduatework.common.ValidationUtils;
+import ru.graduatework.common.Role;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

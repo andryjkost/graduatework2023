@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.graduatework.controller.dto.UserWithRoleResponseDto;
+import ru.graduatework.controller.dto.UserWithRolesResponseDto;
 
 @Service
 @Slf4j
@@ -34,9 +34,14 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractRefreshExpirationTime(String token){
+    public Date extractRefreshExpirationTime(String token) {
         return extractRefreshClaim(token, Claims::getExpiration);
     }
+
+    public Date extractAccessExpirationTime(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaimsAccess(token);
@@ -49,7 +54,7 @@ public class JwtService {
     }
 
     public String generateAccessToken(
-            @NonNull UserWithRoleResponseDto userDetails
+            @NonNull UserWithRolesResponseDto userDetails
     ) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant accessExpirationInstant = now.plusMinutes(240).atZone(ZoneId.systemDefault()).toInstant();
@@ -68,7 +73,7 @@ public class JwtService {
                 .compact();
     }
 
-    public String generateRefreshToken(@NonNull UserWithRoleResponseDto user) {
+    public String generateRefreshToken(@NonNull UserWithRolesResponseDto user) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
@@ -163,7 +168,7 @@ public class JwtService {
                 .getBody();
     }
 
-    public Long getUserIdFromJwt(String jwt){
+    public Long getUserIdFromJwt(String jwt) {
         final Claims claims = getAccessClaims(jwt);
         return Long.parseLong(claims.getId());
     }

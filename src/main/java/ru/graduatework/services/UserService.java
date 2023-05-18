@@ -1,16 +1,14 @@
 package ru.graduatework.services;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.RegisterRequestDto;
 import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.UserWithRoleResponseDto;
-import ru.graduatework.common.Role;
+import ru.graduatework.controller.dto.UserWithRolesResponseDto;
 import ru.graduatework.error.AuthException;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.jooq.tables.records.UserRecord;
@@ -19,6 +17,7 @@ import ru.graduatework.repository.FieldOfActivityRepository;
 import ru.graduatework.repository.RoleRepository;
 import ru.graduatework.repository.UserRepository;
 import ru.graduatework.repository.UserRoleRepository;
+import ru.graduatework.common.Role;
 
 import java.util.UUID;
 
@@ -37,23 +36,23 @@ public class UserService {
 
     private final JwtService jwtService;
 
-    public Mono<UserWithFieldsOfActivityResponseDto> getFullUserByToken(String authToken){
+    public Mono<UserWithFieldsOfActivityResponseDto> getFullUserByToken(String authToken) {
         var id = jwtService.getUserIdFromJwt(authToken);
-        return db.execAsync(ctx->{
-            var user = mapper.mapById(userRepo.getById(ctx,id));
+        return db.execAsync(ctx -> {
+            var user = mapper.mapById(userRepo.getById(ctx, id));
             user.setFieldOfActivitys(fieldOfActivityRepository.getListFieldOfActivityByUserId(ctx, id));
             return user;
         });
     }
 
-    public UserRecord getUserByEmail(String email){
-        return db.execute(ctx-> userRepo.getByEmail(ctx, email));
+    public UserRecord getUserByEmail(String email) {
+        return db.execute(ctx -> userRepo.getByEmail(ctx, email));
     }
 
-    public UserWithRoleResponseDto getByEmail(String email) {
+    public UserWithRolesResponseDto getByEmail(String email) {
         return db.execute(ctx -> {
             var user = mapper.map(userRepo.getByEmail(ctx, email));
-            if(user == null){
+            if (user == null) {
                 throw new AuthException("Нет юзера с такой почтой");
             }
             user.setRoles(roleRepository.getListRoleByUserId(ctx, user.getId()));
@@ -61,7 +60,18 @@ public class UserService {
         });
     }
 
-    public UserWithRoleResponseDto createUser(RegisterRequestDto request) {
+    public UserWithRoleResponseDto getByEmailWithRole(String email) {
+        return db.execute(ctx -> {
+            var user = mapper.mapW(userRepo.getByEmail(ctx, email));
+            if (user == null) {
+                throw new AuthException("Нет юзера с такой почтой");
+            }
+            user.setRole(roleRepository.getRoleByUserId(ctx, user.getId()));
+            return user;
+        });
+    }
+
+    public UserWithRolesResponseDto createUser(RegisterRequestDto request) {
         UserRecord newUser = new UserRecord();
 
         newUser.setId(UUID.randomUUID().getLeastSignificantBits());
@@ -77,7 +87,7 @@ public class UserService {
                     userRoleRepository.setRoleForUser(ctx, roleName, newUser.getId());
                 }
             } else {
-                userRoleRepository.setRoleForUser(ctx, Role.ROLE_USER, newUser.getId());
+                userRoleRepository.setRoleForUser(ctx, Role.USER, newUser.getId());
             }
             user.setRoles(roleRepository.getListRoleByUserId(ctx, newUser.getId()));
             return user;
