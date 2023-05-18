@@ -1,0 +1,159 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_columns_in_user_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="user" columnName="city" schemaName="graduatework"/>
+                <columnExists tableName="user" columnName="social_network" schemaName="graduatework"/>
+                <columnExists tableName="user" columnName="avatar" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+      <addColumn tableName="user">
+          <column name="city" type="VARCHAR(25)" remarks="Город"/>
+      </addColumn>
+        <addColumn tableName="user">
+            <column name="social_network" type="VARCHAR(25)" remarks="Город"/>
+        </addColumn>
+        <addColumn tableName="user">
+            <column name="avatar" type="VARCHAR" remarks="Путь до файла аватарки"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_columns_in_article" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="user" columnName="city" schemaName="graduatework"/>
+                <columnExists tableName="user" columnName="social_network" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="user">
+            <column name="city" type="VARCHAR(25)" remarks="Город"/>
+        </addColumn>
+        <addColumn tableName="user">
+            <column name="social_network" type="VARCHAR(25)" remarks="Город"/>
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet id="create_chapter_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="chapter" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="chapter" remarks="Раздел курса" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="title" type="VARCHAR(100)" remarks="Название">
+                <constraints unique="true"/>
+            </column>
+            <column name="description" type="VARCHAR(255)" remarks="Краткое описание">
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="add_course_chapter_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_chapter" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_chapter" remarks="Связка курса и его разделов" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="course_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chapter_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority_number_of_the_section_in_the_course" remarks="Порядковый номер раздела в курсе" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="course_id"
+                                 baseTableName="course_chapter"
+                                 constraintName="fk_course_chapter_course"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course"/>
+
+        <addForeignKeyConstraint baseColumnNames="chapter_id"
+                                 baseTableName="course_chapter"
+                                 constraintName="fk_course_chapter_chapter"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="chapter"/>
+    </changeSet>
+
+
+    <changeSet id="create_topic_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="topic" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="topic" remarks="Тема" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="title" type="VARCHAR(100)" remarks="Название">
+                <constraints unique="true"/>
+            </column>
+            <column name="description" type="VARCHAR(255)" remarks="Краткое описание">
+            </column>
+            <column name="path_video" type="VARCHAR" remarks="Путь до файла с видео">
+            </column>
+        </createTable>
+    </changeSet>
+
+
+
+    <changeSet id="add_chapter_topic_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="chapter_topic" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="chapter_topic" remarks="Связка раздела и его тем" schemaName="graduatework">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="topic_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chapter_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority_number_of_the_section_in_the_chapter"  remarks="Порядковый номер темы в разделе" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="topic_id"
+                                 baseTableName="chapter_topic"
+                                 constraintName="fk_chapter_topic_topic"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="topic"/>
+
+        <addForeignKeyConstraint baseColumnNames="chapter_id"
+                                 baseTableName="chapter_topic"
+                                 constraintName="fk_chapter_topic_chapter"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="chapter"/>
+    </changeSet>
+
+</databaseChangeLog>

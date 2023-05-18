@@ -1,0 +1,53 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_columns_in_networking_event_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="networking_event" columnName="maximum_number_of_participants" schemaName="graduatework"/>
+                <columnExists tableName="networking_event" columnName="number_of_available_seats" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+       <addColumn tableName="networking_event" schemaName="graduatework">
+           <column name="maximum_number_of_participants" type="BIGINT" remarks="Максимальное кол-во участников"/>
+           <column name="number_of_available_seats" type="BIGINT" remarks="Кол-во свободных мест"/>
+       </addColumn>
+    </changeSet>
+
+    <changeSet id="add_user_networking_event_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+               <tableExists tableName="user_networking_event" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_networking_event" schemaName="graduatework" remarks="Таблица для отслеживания на какие мероприятия записались пользователи">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="networking_event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_networking_event"
+                                 constraintName="fk_user_networking_event_user"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+
+        <addForeignKeyConstraint baseColumnNames="networking_event_id"
+                                 baseTableName="user_networking_event"
+                                 constraintName="fk_user_networking_event_networking_event"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="networking_event"/>
+    </changeSet>
+</databaseChangeLog>
