@@ -36,8 +36,9 @@ public class UserService {
 
     private final JwtService jwtService;
 
-    public Mono<UserWithFieldsOfActivityResponseDto> getFullUserByToken(String authToken) {
-        var id = jwtService.getUserIdFromJwt(authToken);
+    public Mono<UserWithFieldsOfActivityResponseDto> getFullUserByToken(String authHeader) {
+        var jwt = authHeader.substring(7);
+        var id = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
         return db.execAsync(ctx -> {
             var user = mapper.mapById(userRepo.getById(ctx, id));
             user.setFieldOfActivitys(fieldOfActivityRepository.getListFieldOfActivityByUserId(ctx, id));

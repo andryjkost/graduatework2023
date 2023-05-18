@@ -8,11 +8,10 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import reactor.core.publisher.Mono;
 
 import static org.springframework.http.HttpStatus.*;
 
-
+//Временно, вернуть реактивщину позже
 @Slf4j
 @RestControllerAdvice
 public class PhraseServiceErrorHandler {
@@ -29,36 +28,36 @@ public class PhraseServiceErrorHandler {
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.error("MethodArgumentTypeMismatchException: {}", ex.toString());
-        return Mono.just(new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.ARGUMENT_TYPE_MISMATCH).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST));
+        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.ARGUMENT_TYPE_MISMATCH).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
         log.error("HttpRequestMethodNotSupportedException: {}", ex.toString());
-        return Mono.just(new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.NOT_SUPPORTED).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST));
+        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.NOT_SUPPORTED).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.error("HttpMessageNotReadableException: {}", ex.toString());
-        return Mono.just(new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.NOT_READABLE).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST));
+        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.NOT_READABLE).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
+    public ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
         log.error("MissingRequestHeaderException: {}", ex.toString());
-        return Mono.just(new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.MISSING_REQUEST_HEADER).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST));
+        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.MISSING_REQUEST_HEADER).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(Exception.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleUnexpectedErrorException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleUnexpectedErrorException(Exception ex) {
         log.error("Exception: {}", ex.toString());
-        return Mono.just(new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.INTERNAL_SERVER_ERROR).userMessage("Внутренняя ошибка сервиса").build()).build(), INTERNAL_SERVER_ERROR));
+        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.INTERNAL_SERVER_ERROR).userMessage("Внутренняя ошибка сервиса").build()).build(), INTERNAL_SERVER_ERROR);
     }
 }

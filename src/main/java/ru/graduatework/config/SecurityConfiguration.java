@@ -41,7 +41,9 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
-                        "/api/v1/auth/**",
+                //ATTENTION!!! Временно снять авторизацию со всех методов, до  переделки на реактивщинну
+                        "/api/v1/**",
+                //ATTENTION!!!
                         "/v2/api-docs",
                         "/v3/api-docs",
                         "/v3/api-docs/**",

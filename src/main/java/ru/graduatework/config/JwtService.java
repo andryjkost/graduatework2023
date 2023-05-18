@@ -168,8 +168,8 @@ public class JwtService {
                 .getBody();
     }
 
-    public Long getUserIdFromJwt(String jwt) {
+    public String getUserIdFromJwt(String jwt) {
         final Claims claims = getAccessClaims(jwt);
-        return Long.parseLong(claims.getId());
+        return claims.get("id").toString();
     }
 }
