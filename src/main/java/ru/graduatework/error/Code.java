@@ -1,6 +1,7 @@
 package ru.graduatework.error;
 
 public enum Code {
+    FILE_CREATION_ERROR,
     UNAUTHORIZED,
     USER_DUPLICATE_EMAIL,
     USER_NOT_FOUND,
