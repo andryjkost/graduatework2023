@@ -3,10 +3,7 @@ package ru.graduatework.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.CourseResponseDto;
 
@@ -18,7 +15,13 @@ import ru.graduatework.controller.dto.CourseResponseDto;
 public class AuthorController {
     @Operation(summary = "Получение авторов")
     @GetMapping("")
-    Mono<CourseResponseDto> getArticle(){
+    Mono<CourseResponseDto> getAuthor() {
         return Mono.just(new CourseResponseDto());
+    }
+
+    @Operation(summary = "")
+    @PutMapping("")
+    Mono<Void> updateAuthor() {
+        return Mono.empty();
     }
 }

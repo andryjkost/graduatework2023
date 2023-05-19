@@ -1,4 +1,4 @@
-package ru.graduatework.controller;
+package ru.graduatework.controller.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,7 +22,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @CrossOrigin(originPatterns = "*", allowCredentials = "true")
 @Tag(description = "Работа с пользователями", name = "UserController")
-public class UserController {
+public class UserUserController {
 
     private final UserService userService;
 

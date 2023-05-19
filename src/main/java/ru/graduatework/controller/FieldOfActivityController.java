@@ -31,4 +31,28 @@ public class FieldOfActivityController {
     {
         return fieldOfActivityService.getAll(offset, limit);
     }
+
+    @Operation(summary = "")
+    @GetMapping("")
+    Mono<Void> getById(){
+        return Mono.empty();
+    }
+
+    @Operation(summary = "")
+    @PostMapping("")
+    Mono<Void> createFieldOfActivity(){
+        return Mono.empty();
+    }
+
+    @Operation(summary = "")
+    @PutMapping("")
+    Mono<Void> updateFieldOfActivityById(){
+        return Mono.empty();
+    }
+
+    @Operation(summary = "")
+    @DeleteMapping("")
+    Mono<Void> deleteFieldOfActivityById(){
+        return Mono.empty();
+    }
 }
