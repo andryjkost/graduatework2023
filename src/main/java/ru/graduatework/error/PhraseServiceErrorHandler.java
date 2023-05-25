@@ -17,9 +17,9 @@ import static org.springframework.http.HttpStatus.*;
 public class PhraseServiceErrorHandler {
 
     @ExceptionHandler(CommonException.class)
-    public ResponseEntity<ErrorResponse> handleCommonException(CommonException ex) {
+    public ResponseEntity<ErrorResponseDto> handleCommonException(CommonException ex) {
         log.error("CommonException: {}", ex.toString());
-        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder()
+        return new ResponseEntity<>(ErrorResponseDto.builder().error(Error.builder()
                 .code(ex.getCode())
                 .userMessage(ex.getUserMessage())
                 .techMessage(ex.getTechMessage())
@@ -28,36 +28,36 @@ public class PhraseServiceErrorHandler {
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ErrorResponseDto> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.error("MethodArgumentTypeMismatchException: {}", ex.toString());
-        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.ARGUMENT_TYPE_MISMATCH).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponseDto.builder().error(Error.builder().code(Code.ARGUMENT_TYPE_MISMATCH).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<ErrorResponseDto> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
         log.error("HttpRequestMethodNotSupportedException: {}", ex.toString());
-        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.NOT_SUPPORTED).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponseDto.builder().error(Error.builder().code(Code.NOT_SUPPORTED).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.error("HttpMessageNotReadableException: {}", ex.toString());
-        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.NOT_READABLE).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponseDto.builder().error(Error.builder().code(Code.NOT_READABLE).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
+    public ResponseEntity<ErrorResponseDto> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
         log.error("MissingRequestHeaderException: {}", ex.toString());
-        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.MISSING_REQUEST_HEADER).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
+        return new ResponseEntity<>(ErrorResponseDto.builder().error(Error.builder().code(Code.MISSING_REQUEST_HEADER).techMessage(ex.getMessage()).build()).build(), BAD_REQUEST);
     }
 
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnexpectedErrorException(Exception ex) {
+    public ResponseEntity<ErrorResponseDto> handleUnexpectedErrorException(Exception ex) {
         log.error("Exception: {}", ex.toString());
-        return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.INTERNAL_SERVER_ERROR).userMessage("Внутренняя ошибка сервиса").build()).build(), INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ErrorResponseDto.builder().error(Error.builder().code(Code.INTERNAL_SERVER_ERROR).userMessage("Внутренняя ошибка сервиса").build()).build(), INTERNAL_SERVER_ERROR);
     }
 }

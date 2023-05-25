@@ -39,7 +39,11 @@ public class UserRepository {
                 .fetchOne();
         if (isNull(result)) {
             log.error("User with id {} not found", id);
-            throw CommonException.builder().code(USER_NOT_FOUND).userMessage("Пользователь не найден").techMessage("User not found").httpStatus(HttpStatus.NOT_FOUND).build();
+            throw CommonException.builder()
+                    .code(USER_NOT_FOUND)
+                    .userMessage("Пользователь не найден")
+                    .techMessage("User not found")
+                    .httpStatus(HttpStatus.NOT_FOUND).build();
         }
         return result;
     }

@@ -1,0 +1,44 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_column_in_article_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="article" columnName="pathArticle" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="article" schemaName="graduatework">
+            <column name="pathArticle" type="VARCHAR(255)" remarks="Путь до файла со статьей"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_column_in_author_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="author" columnName="user_id" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="author" schemaName="graduatework">
+            <column name="user_id" type="BIGINT" remarks="ID юзера"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="author"
+                                 constraintName="fk_author_user_id"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+    </changeSet>
+
+    <changeSet id="delete_columns_in_author_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="author" columnName="password" schemaName="graduatework"/>
+            <columnExists tableName="author" columnName="username" schemaName="graduatework"/>
+        </preConditions>
+        <dropColumn tableName="author" columnName="password"></dropColumn>
+        <dropColumn tableName="author" columnName="username"></dropColumn>
+    </changeSet>
+
+</databaseChangeLog>

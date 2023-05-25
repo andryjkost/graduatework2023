@@ -14,7 +14,7 @@ import ru.graduatework.controller.dto.CourseResponseDto;
 @Tag(description = "Работа с мероприятиями", name = "NetworkingEventController")
 public class NetworkingEventController {
     @Operation(summary = "Получение списка мероприятий")
-    @GetMapping("")
+    @GetMapping("/list")
     Mono<CourseResponseDto> getArticle(){
         return Mono.just(new CourseResponseDto());
     }
@@ -32,7 +32,7 @@ public class NetworkingEventController {
     }
 
     @Operation(summary = "")
-    @GetMapping("")
+    @GetMapping("/id")
     Mono<Void> getNetworkingEventById(){
         return Mono.empty();
     }

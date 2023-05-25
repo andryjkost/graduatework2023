@@ -21,7 +21,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 @CrossOrigin(originPatterns = "*", allowCredentials = "true")
-@Tag(description = "Работа с пользователями", name = "UserController")
+@Tag(description = "Работа с пользователями", name = "UserUserController")
 public class UserUserController {
 
     private final UserService userService;

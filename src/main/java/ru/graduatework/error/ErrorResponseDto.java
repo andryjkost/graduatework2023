@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ErrorResponse{
+public class ErrorResponseDto {
 
     private Error error;
 }
