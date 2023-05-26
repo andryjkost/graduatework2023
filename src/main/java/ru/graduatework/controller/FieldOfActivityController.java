@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.FieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
-import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
 import ru.graduatework.services.FieldOfActivityService;
 
 @RestController

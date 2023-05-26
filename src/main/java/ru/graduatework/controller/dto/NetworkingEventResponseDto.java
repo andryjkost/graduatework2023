@@ -41,7 +41,7 @@ public class NetworkingEventResponseDto {
     private String numberOfAvailableSeats;
 
     @Schema(description = "ID автора")
-    private Long author_id;
+    private Long authorId;
 
     @Schema(description = "Имя + фамилия автора")
     private String authorFirstLastNames;

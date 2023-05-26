@@ -1,12 +1,16 @@
 package ru.graduatework.common;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NetworkingEventPaginatedFilter {
-    private final int offset;
-    private final int limit;
-    private final NetworkingEventStatus status;
+    private  int offset;
+    private  int limit;
+    private  NetworkingEventStatus status;
+    private  Boolean eventSubscriptionFlag;
+    private  Long userId;
 }

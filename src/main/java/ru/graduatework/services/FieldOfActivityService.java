@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.FieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
-import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
-import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.repository.FieldOfActivityRepository;
 

@@ -10,6 +10,8 @@ import ru.graduatework.controller.dto.NetworkingEventRequestDto;
 import ru.graduatework.controller.dto.NetworkingEventResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
+import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
+import ru.graduatework.mapper.NetworkingEventDtoMapper;
 import ru.graduatework.repository.NetworkingEventRepository;
 
 @Service
@@ -18,19 +20,28 @@ import ru.graduatework.repository.NetworkingEventRepository;
 public class NetworkingEventService {
 
     private final JwtService jwtService;
+    private final AuthorService authorService;
+
     private final NetworkingEventRepository networkingEventRepository;
     private final PostgresOperatingDb db;
 
+    private final NetworkingEventDtoMapper networkingEventDtoMapper;
+
     public Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getPaginatedListOfEvents(NetworkingEventPaginatedFilter filter, String authToken) {
         var jwt = authToken.substring(7);
-        var id = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        filter.setUserId(userId);
+
+//        var author = authorService.getByUserId(userId);
         return db.execAsync(ctx -> networkingEventRepository.getPaginatedListOfEvents(ctx, filter));
     }
 
-    public Mono<Void> createNetworkingEvent(String authToken, NetworkingEventRequestDto requestDto) {
+    public Mono<NetworkingEventResponseDto> createNetworkingEvent(String authToken, NetworkingEventRequestDto requestDto) {
         var jwt = authToken.substring(7);
-        var id = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
-        return Mono.empty();
+        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var author = authorService.getByUserId(userId);
+
+        return db.execAsync(ctx-> networkingEventDtoMapper.map(networkingEventRepository.createNetworkingEvent(ctx, requestDto, author.getId())));
     }
 
 }

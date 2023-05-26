@@ -5,10 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.graduatework.common.NetworkingEventStatus;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,9 +30,9 @@ public class NetworkingEventRequestDto {
 
     @Schema(description = "Время начала мероприятия")
     @NotNull
-    private LocalDateTime startTime;
+    private OffsetDateTime startTime;
 
     @Schema(description = "Максимальное кол-во участников")
     @NotNull
-    private String maximumNumberOfParticipants;
+    private Long maximumNumberOfParticipants;
 }

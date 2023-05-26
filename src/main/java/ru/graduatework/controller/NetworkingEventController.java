@@ -22,7 +22,7 @@ import ru.graduatework.services.NetworkingEventService;
 public class NetworkingEventController {
 
     private final NetworkingEventService service;
-
+    //доделать добавление инфы автора
     @Operation(summary = "Получение списка мероприятий c фильтрацией и пагинацией")
     @GetMapping("")
     Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getPaginatedByParams(
@@ -32,20 +32,23 @@ public class NetworkingEventController {
             @Parameter(description = "Ограничение на число показанных результатов", allowEmptyValue = true)
             @RequestParam(required = false, defaultValue = "10") int limit,
             @Parameter(description = "Фильтр по статусам", allowEmptyValue = true)
-            @RequestParam(required = false) NetworkingEventStatus status
+            @RequestParam(required = false) NetworkingEventStatus status,
+            @RequestParam(required = false) @Parameter(description = "Выдать мероприятия на которые подписан пользователь( true- подписан, false- нет, null - все)") Boolean eventSubscriptionFlag
     ) {
         var filter = NetworkingEventPaginatedFilter.builder()
                 .offset(offset)
                 .limit(limit)
                 .status(status)
+                .eventSubscriptionFlag(eventSubscriptionFlag)
                 .build();
 
         return service.getPaginatedListOfEvents(filter, authToken);
     }
 
+    //доделать инфу про авторов
     @Operation(summary = "Создать мероприятие")
     @PostMapping("")
-    Mono<Void> createNetworkingEvent(
+    Mono<NetworkingEventResponseDto> createNetworkingEvent(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
             @RequestBody NetworkingEventRequestDto requestDto
             ) {
