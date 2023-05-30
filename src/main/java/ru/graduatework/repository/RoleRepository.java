@@ -8,8 +8,6 @@ import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.RoleRecord;
 import ru.graduatework.common.Role;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.graduatework.jooq.Tables.*;
 
@@ -17,12 +15,6 @@ import static ru.graduatework.jooq.Tables.*;
 @Repository
 @RequiredArgsConstructor
 public class RoleRepository {
-
-    public List<Role> getListRoleByUserId(PostgresOperatingContext ctx, Long id) {
-        return ctx.dsl()
-                .selectFrom(ROLE.join(USER_ROLE).on(ROLE.ID.eq(USER_ROLE.ROLE_ID).and(USER_ROLE.USER_ID.eq(id))))
-                .fetchInto(RoleRecord.class).stream().map(record -> Role.valueOf(record.getName())).collect(Collectors.toList());
-    }
 
     public Role getRoleByUserId(PostgresOperatingContext ctx, Long id) {
         var role = ctx.dsl()

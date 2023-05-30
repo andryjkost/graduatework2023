@@ -11,7 +11,6 @@ import ru.graduatework.common.Role;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.List;
 
 @Data
 @Builder
@@ -37,5 +36,5 @@ public class RegisterRequestDto {
     @NotNull
     private String password;
 
-    private List<Role> roles;
+    private Role role;
 }

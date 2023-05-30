@@ -1,0 +1,25 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_columns_in_author_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="author" columnName="city" schemaName="graduatework"/>
+                <columnExists tableName="author" columnName="social_network" schemaName="graduatework"/>
+                <columnExists tableName="author" columnName="avatar" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="author">
+            <column name="city" type="VARCHAR(25)" remarks="Город"/>
+        </addColumn>
+        <addColumn tableName="author">
+            <column name="social_network" type="VARCHAR(25)" remarks="Город"/>
+        </addColumn>
+        <addColumn tableName="author">
+            <column name="avatar" type="VARCHAR" remarks="Путь до файла аватарки"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

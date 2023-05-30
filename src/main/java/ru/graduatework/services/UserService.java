@@ -58,7 +58,7 @@ public class UserService {
             if (user == null) {
                 throw new AuthException("Нет юзера с такой почтой");
             }
-            user.setRoles(roleRepository.getListRoleByUserId(ctx, user.getId()));
+            user.setRole(roleRepository.getRoleByUserId(ctx, user.getId()));
             return user;
         });
     }
@@ -85,14 +85,12 @@ public class UserService {
 
         return db.execute(ctx -> {
             var user = mapper.map(userRepo.save(ctx, newUser));
-            if (request.getRoles() != null && !request.getRoles().isEmpty()) {
-                for (var roleName : request.getRoles()) {
-                    userRoleRepository.setRoleForUser(ctx, roleName, newUser.getId());
-                }
+            if (request.getRole() != null) {
+                userRoleRepository.setRoleForUser(ctx, request.getRole(), newUser.getId());
             } else {
                 userRoleRepository.setRoleForUser(ctx, Role.USER, newUser.getId());
             }
-            user.setRoles(roleRepository.getListRoleByUserId(ctx, newUser.getId()));
+            user.setRole(roleRepository.getRoleByUserId(ctx, newUser.getId()));
             return user;
         });
     }
@@ -133,18 +131,18 @@ public class UserService {
         return Mono.empty();
     }
 
-    public Mono<Void> deletedAvatar(String authToken){
+    public Mono<Void> deletedAvatar(String authToken) {
         var jwt = authToken.substring(7);
         var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
-        var avatarPath = db.execute(ctx-> userRepo.getAvatarPath(ctx, userId));
+        var avatarPath = db.execute(ctx -> userRepo.getAvatarPath(ctx, userId));
         fileSystemRepository.delete(avatarPath);
         return Mono.empty();
     }
 
-    public Mono<FileSystemResource> getAvatar(String authToken){
+    public Mono<FileSystemResource> getAvatar(String authToken) {
         var jwt = authToken.substring(7);
         var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
-        var avatarPath = db.execute(ctx-> userRepo.getAvatarPath(ctx, userId));
+        var avatarPath = db.execute(ctx -> userRepo.getAvatarPath(ctx, userId));
         FileSystemResource avatarFile = fileSystemRepository.findInFileSystem(avatarPath);
         return Mono.just(avatarFile);
     }

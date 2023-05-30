@@ -10,7 +10,6 @@ import ru.graduatework.controller.dto.NetworkingEventRequestDto;
 import ru.graduatework.controller.dto.NetworkingEventResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
-import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
 import ru.graduatework.mapper.NetworkingEventDtoMapper;
 import ru.graduatework.repository.NetworkingEventRepository;
 

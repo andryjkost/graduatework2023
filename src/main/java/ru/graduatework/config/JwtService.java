@@ -67,7 +67,7 @@ public class JwtService {
                 .setExpiration(accessExpiration)
                 .signWith(getAccessSignInKey(), SignatureAlgorithm.HS256)
                 .claim("id", userDetails.getId())
-                .claim("roles", userDetails.getRoles())
+                .claim("role", userDetails.getRole())
                 .claim("firstName", userDetails.getFirstName())
                 .claim("lastName", userDetails.getLastName())
                 .compact();

@@ -2,6 +2,7 @@ package ru.graduatework.mapper;
 
 
 import org.mapstruct.Mapper;
+import ru.graduatework.controller.dto.AuthorRequestDto;
 import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.UserWithRoleResponseDto;
 import ru.graduatework.controller.dto.UserWithRolesResponseDto;
@@ -15,5 +16,6 @@ public interface UserDtoMapper {
 
     UserWithFieldsOfActivityResponseDto mapById(UserRecord user);
 
+    UserRecord mapFromAuthor(AuthorRequestDto author);
 //    UserDetails map(UserWithRoleResponseDto user);
 }

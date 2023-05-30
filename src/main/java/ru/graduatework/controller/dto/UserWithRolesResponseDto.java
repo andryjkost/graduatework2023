@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.graduatework.common.Role;
 
-import java.util.List;
-
 @NoArgsConstructor
 @Data
 public class UserWithRolesResponseDto  {
@@ -15,5 +13,5 @@ public class UserWithRolesResponseDto  {
     private String firstName;
     private String lastName;
     private String password;
-    private List<Role> roles;
+    private Role role;
 }
