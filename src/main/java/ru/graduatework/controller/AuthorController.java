@@ -15,7 +15,7 @@ import ru.graduatework.services.AuthorService;
 @RestController
 @RequestMapping("/api/v1/author")
 @RequiredArgsConstructor
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+@CrossOrigin(origins = "*")
 @Tag(description = "Работа с авторами", name = "AuthorController")
 public class AuthorController {
 

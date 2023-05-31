@@ -16,7 +16,7 @@ import ru.graduatework.controller.dto.RegisterRequestDto;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+@CrossOrigin(origins = "*")
 @Tag(description = "Работа с авторизацией и аутентификацией", name = "AuthenticationController")
 public class AuthenticationController {
 
