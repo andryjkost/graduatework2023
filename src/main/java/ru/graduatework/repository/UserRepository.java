@@ -33,6 +33,7 @@ public class UserRepository {
     public String getAvatarPath(PostgresOperatingContext ctx, Long id){
         return ctx.dsl().select(USER.AVATAR).from(USER).where(USER.ID.eq(id)).fetchOneInto(String.class);
     }
+
     public UserRecord getById(PostgresOperatingContext ctx, Long id) {
         var result = ctx.dsl().selectFrom(USER)
                 .where(USER.ID.eq(id))

@@ -134,7 +134,10 @@ public class UserService {
     public Mono<Void> deletedAvatar(String authToken) {
         var jwt = authToken.substring(7);
         var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+
         var avatarPath = db.execute(ctx -> userRepo.getAvatarPath(ctx, userId));
+
+        db.execute(ctx -> userRepo.updateUserAvatar(ctx, null, userId));
         fileSystemRepository.delete(avatarPath);
         return Mono.empty();
     }
@@ -143,7 +146,11 @@ public class UserService {
         var jwt = authToken.substring(7);
         var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
         var avatarPath = db.execute(ctx -> userRepo.getAvatarPath(ctx, userId));
-        FileSystemResource avatarFile = fileSystemRepository.findInFileSystem(avatarPath);
-        return Mono.just(avatarFile);
+        if (avatarPath != null) {
+            FileSystemResource avatarFile = fileSystemRepository.findInFileSystem(avatarPath);
+            return Mono.just(avatarFile);
+        } else {
+            return Mono.empty();
+        }
     }
 }
