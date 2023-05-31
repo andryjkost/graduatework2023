@@ -34,7 +34,7 @@ public class UserUserController {
         return userService.getFullUserByToken(authToken);
     }
 
-    @Operation(summary = "Редактирование информации о Пользователе")
+    @Operation(summary = "Редактирование информации о Пользователе(изменяются только заполненные поля)")
     @PutMapping("")
     Mono<Void> updateUserInfo(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
