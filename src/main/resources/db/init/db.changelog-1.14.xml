@@ -1,0 +1,31 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="refactor_text_article_column" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="article" columnName="text_article" schemaName="graduatework"/>
+            </not>
+            <columnExists tableName="article" columnName="pathArticle" schemaName="graduatework"/>
+        </preConditions>
+        <addColumn tableName="article">
+            <column name="text_article" type="TEXT" remarks="Текст статьи"/>
+        </addColumn>
+        <dropColumn tableName="article" columnName="pathArticle"/>
+    </changeSet>
+
+    <changeSet id="add_time_of_creation_or_modification_column_to_article_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="article" columnName="time_of_creation_or_modification"
+                              schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="article">
+            <column name="time_of_creation_or_modification" type="timestamptz" defaultValue="transaction_timestamp()"
+                    remarks="Время создания или время модификации"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

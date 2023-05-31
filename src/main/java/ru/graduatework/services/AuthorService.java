@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import ru.graduatework.common.Role;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.AuthenticationResponseDto;
 import ru.graduatework.controller.dto.AuthorRequestDto;
@@ -13,6 +14,7 @@ import ru.graduatework.jooq.tables.records.AuthorRecord;
 import ru.graduatework.mapper.UserDtoMapper;
 import ru.graduatework.repository.AuthorRepository;
 import ru.graduatework.repository.UserRepository;
+import ru.graduatework.repository.UserRoleRepository;
 
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ public class AuthorService {
     private final PostgresOperatingDb db;
     private final UserRepository userRepository;
     private final AuthorRepository authorRepository;
+    private final UserRoleRepository userRoleRepository;
 
     private final UserDtoMapper userDtoMapper;
 
@@ -57,9 +60,13 @@ public class AuthorService {
         newUserRecord.setId(newUserId);
 
         var user = db.execute(ctx -> userRepository.save(ctx, newUserRecord));
-        var newUser = userDtoMapper.map(user);
+        db.execute(ctx -> {
+            userRoleRepository.setRoleForUser(ctx, Role.AUTHOR, user.getId());
+            authorRepository.createAuthor(ctx, newAuthor);
+            return null;
+        });
 
-        db.execute(ctx-> authorRepository.createAuthor(ctx, newAuthor));
+        var newUser = userDtoMapper.map(user);
 
         var jwtAccessToken = jwtService.generateAccessToken(newUser);
         var jwtRefreshToken = jwtService.generateRefreshToken(newUser);
