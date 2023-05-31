@@ -12,7 +12,7 @@ import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
 @RestController
 @RequestMapping("/api/v1/course")
 @RequiredArgsConstructor
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+@CrossOrigin(origins = "*")
 @Tag(description = "Работа с курсами", name = "CourseController")
 public class CourseController {
 

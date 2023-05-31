@@ -17,7 +17,7 @@ import ru.graduatework.services.NetworkingEventService;
 @RestController
 @RequestMapping("/api/v1/networking_event")
 @RequiredArgsConstructor
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+@CrossOrigin(origins = "*")
 @Tag(description = "Работа с мероприятиями", name = "NetworkingEventController")
 public class NetworkingEventController {
 

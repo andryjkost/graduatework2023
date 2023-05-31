@@ -13,7 +13,7 @@ import ru.graduatework.controller.dto.CourseResponseDto;
 @RestController
 @RequestMapping("/api/v1/article")
 @RequiredArgsConstructor
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+@CrossOrigin(origins = "*")
 @Tag(description = "Работа со статьями", name = "ArticleController")
 public class ArticleController {
     @Operation(summary = "Получение статей")
