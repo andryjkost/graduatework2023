@@ -2,14 +2,20 @@ package ru.graduatework.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
+import ru.graduatework.common.Utils;
 import ru.graduatework.controller.dto.ArticleShortResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.ArticleRecord;
 import ru.graduatework.mapper.ArticleDtoMapper;
+import ru.graduatework.model.ArticleWithAuthorModel;
+import ru.graduatework.model.AuthorShortModel;
 
-import static ru.graduatework.jooq.Tables.ARTICLE;
+import java.time.OffsetDateTime;
+
+import static ru.graduatework.jooq.Tables.*;
 
 @Slf4j
 @Repository
@@ -18,12 +24,33 @@ public class ArticleRepository {
 
     private final ArticleDtoMapper articleDtoMapper;
 
+    public Boolean update(PostgresOperatingContext ctx, ArticleRecord articleRecord, Long articleId){
+        return ctx.dsl().update(ARTICLE)
+                .set(articleRecord)
+                .where(ARTICLE.ID.eq(articleId)).execute() == 1;
+    }
+
     public ArticleRecord createArticle(PostgresOperatingContext ctx, ArticleRecord articleRecord) {
         return ctx.dsl().insertInto(ARTICLE).set(articleRecord).returning().fetchOne();
     }
 
-    public ArticleRecord getById(PostgresOperatingContext ctx, Long id) {
-        return ctx.dsl().selectFrom(ARTICLE).where(ARTICLE.ID.eq(id)).fetchOneInto(ArticleRecord.class);
+    public ArticleWithAuthorModel getById(PostgresOperatingContext ctx, Long id) {
+        return ctx.dsl()
+                .select(ARTICLE.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
+                .from(ARTICLE
+                        .leftJoin(AUTHOR_ARTICLE).on(ARTICLE.ID.eq(AUTHOR_ARTICLE.ARTICLE_ID))
+                        .leftJoin(AUTHOR).on(AUTHOR_ARTICLE.AUTHOR_ID.eq(AUTHOR.ID)))
+                .where(ARTICLE.ID.eq(id))
+                .fetchOne(record -> ArticleWithAuthorModel.builder()
+                        .id((Long) record.get(0))
+                        .title((String) record.getValue(1))
+                        .textArticle((String) record.getValue(2))
+                        .timeModification((OffsetDateTime) record.get(3))
+                        .authorShortModel(AuthorShortModel.builder()
+                                .id((Long) record.get(4))
+                                .firstLastName(Utils.getFullName((String) record.get(5), (String) record.get(6)))
+                                .build())
+                        .build());
     }
 
     public PaginatedResponseDto<ArticleShortResponseDto> getPaginatedShortArticle(PostgresOperatingContext ctx, int offset, int limit) {

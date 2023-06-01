@@ -46,4 +46,14 @@ public class ArticleController {
     ) {
         return articleService.createArticle(authToken, requestDto);
     }
+
+    @Operation(summary = "Редактирование статьи по id(передавать null в поле если его не нужно редактировать)")
+    @PutMapping("")
+    Mono<Boolean> updateArticle(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @RequestBody UpdateArticleRequestDto requestDto) {
+
+        return articleService.updateArticle(authToken, requestDto);
+    }
+
 }

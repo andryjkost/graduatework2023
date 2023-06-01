@@ -20,5 +20,4 @@ public class AuthorArticleRepository {
                 new AuthorArticleRecord(UUID.randomUUID().getLeastSignificantBits(), authorId, articleId)
         ).execute();
     }
-
 }

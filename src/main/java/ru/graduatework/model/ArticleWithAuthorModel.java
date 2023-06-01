@@ -1,11 +1,10 @@
-package ru.graduatework.controller.dto;
+package ru.graduatework.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
 
@@ -13,9 +12,8 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Data
 @Builder
-@Schema(description = "Статья")
-public class ArticleResponseDto {
-
+@Schema(description = "Статья c автором")
+public class ArticleWithAuthorModel {
     @Schema(description = "ID")
     private Long id;
 
@@ -28,6 +26,6 @@ public class ArticleResponseDto {
     @Schema(description = "Время последнего изменения")
     private OffsetDateTime timeModification;
 
-    @Schema(description = "Автор")
     private AuthorShortModel authorShortModel;
+
 }
