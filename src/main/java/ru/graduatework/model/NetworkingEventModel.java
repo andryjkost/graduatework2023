@@ -23,7 +23,7 @@ public class NetworkingEventModel {
 
     private String maximumNumberOfParticipants;
 
-    private String numberOfAvailableSeats;
-    private Long authorId;
-    private String authorFirstLastNames;
+    private String pathToAvatar;
+
+    private AuthorShortModel authorShortModel;
 }
