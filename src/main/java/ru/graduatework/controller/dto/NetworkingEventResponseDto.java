@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.graduatework.common.NetworkingEventStatus;
+import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
 
@@ -35,14 +36,11 @@ public class NetworkingEventResponseDto {
     private NetworkingEventStatus status;
 
     @Schema(description = "Максимальное кол-во участников")
-    private String maximumNumberOfParticipants;
+    private Long maximumNumberOfParticipants;
 
     @Schema(description = "Кол-во свободных мест")
-    private String numberOfAvailableSeats;
+    private Long numberOfAvailableSeats;
 
-    @Schema(description = "ID автора")
-    private Long authorId;
-
-    @Schema(description = "Имя + фамилия автора")
-    private String authorFirstLastNames;
+    @Schema(description = "Инфа об авторе")
+    private AuthorShortModel authorShortModel;
 }

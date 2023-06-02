@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 import ru.graduatework.common.NetworkingEventPaginatedFilter;
+import ru.graduatework.common.NetworkingEventStatus;
+import ru.graduatework.common.Utils;
 import ru.graduatework.controller.dto.NetworkingEventRequestDto;
 import ru.graduatework.controller.dto.NetworkingEventResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
@@ -12,7 +14,9 @@ import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.AuthorNetworkingEventRecord;
 import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
 import ru.graduatework.mapper.NetworkingEventDtoMapper;
+import ru.graduatework.model.AuthorShortModel;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static ru.graduatework.common.NetworkingEventStatus.*;
@@ -39,10 +43,10 @@ public class NetworkingEventRepository {
             }
         }
 
-        var selectQuery = ctx.dsl().select(NETWORKING_EVENT.asterisk())
+        var selectQuery = ctx.dsl().select(NETWORKING_EVENT.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
                 .from(NETWORKING_EVENT
-//                        .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
-//                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
+                        .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
+                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
                         .leftJoin(USER_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID)));
 
         var totalCount = ctx.dsl()
@@ -62,26 +66,30 @@ public class NetworkingEventRepository {
                 )
                 .offset(filter.getOffset())
                 .limit(filter.getLimit() > 0 ? filter.getLimit() : null)
-                .fetchInto(NetworkingEventRecord.class);
+                .fetch().map(record -> NetworkingEventResponseDto.builder()
+                        .id((Long) record.get(0))
+                        .title((String) record.get(1))
+                        .description((String) record.get(2))
+                        .link((String) record.get(3))
+                        .startTime((OffsetDateTime) record.get(4))
+                        .status(NetworkingEventStatus.valueOf((String) record.get(5)))
+                        .maximumNumberOfParticipants((Long) record.get(6))
+                        .numberOfAvailableSeats((Long) record.get(7))
+                        .authorShortModel(AuthorShortModel.builder()
+                                .id((Long) record.get(8))
+                                .firstLastName(Utils.getFullName((String) record.get(9), (String) record.get(10)))
+                                .build())
+                        .build());
 
-        //доделать добавление инфы автора
-        var networkingEventIdWithAuthorId = ctx.dsl()
-                .select(NETWORKING_EVENT.ID.as("networking_id"), AUTHOR.ID, AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
-                .from(NETWORKING_EVENT)
-                .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
-                .leftJoin(AUTHOR).on(AUTHOR.ID.eq(AUTHOR_NETWORKING_EVENT.AUTHOR_ID))
-                .fetch();
-
-        var result = mapper.map(listNetworkingEvent);
 
         return PaginatedResponseDto.<NetworkingEventResponseDto>builder()
                 .totalCount(totalCount)
-                .count(result.size())
-                .result(result)
+                .count(listNetworkingEvent.size())
+                .result(listNetworkingEvent)
                 .build();
     }
 
-    public NetworkingEventRecord createNetworkingEvent(PostgresOperatingContext ctx, NetworkingEventRequestDto requestDto, Long authorId){
+    public NetworkingEventRecord createNetworkingEvent(PostgresOperatingContext ctx, NetworkingEventRequestDto requestDto, Long authorId) {
 
         NetworkingEventRecord newNetworkingEvent = new NetworkingEventRecord();
 
