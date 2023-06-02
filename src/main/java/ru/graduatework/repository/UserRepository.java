@@ -6,6 +6,7 @@ import org.jooq.impl.DSL;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
+import ru.graduatework.common.FlagFile;
 import ru.graduatework.controller.dto.UpdateUserRequestDto;
 import ru.graduatework.error.CommonException;
 import ru.graduatework.jdbc.PostgresOperatingContext;
@@ -13,7 +14,6 @@ import ru.graduatework.jooq.tables.records.UserRecord;
 
 import java.time.OffsetDateTime;
 
-import static ru.graduatework.error.Code.USER_DUPLICATE_EMAIL;
 import static ru.graduatework.error.Code.USER_NOT_FOUND;
 import static ru.graduatework.jooq.tables.User.USER;
 
@@ -130,6 +130,6 @@ public class UserRepository {
     }
 
     public String uploadImage(MultipartFile image, Long userId) throws Exception {
-        return fileSystemRepository.save(image.getBytes(), userId);
+        return fileSystemRepository.save(image.getBytes(), userId, FlagFile.USER_AVATAR);
     }
 }

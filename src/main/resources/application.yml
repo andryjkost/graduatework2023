@@ -45,8 +45,10 @@ jwt:
 
 file-system:
   storage:
-    avatar: /home/user_avatar/
-    video:  /home/video_By_Cource/
+    avatar: /home/andrej/user_avatar/
+    video:  /home/andrej/video_By_Cource/
+    networking-event-avatar: /home/andrej/networking_event_avatar/
+    course-avatar: /home/andrej/course_avatar/
 
 networking-event-shedule:
    enable: true

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.common.NetworkingEventPaginatedFilter;
@@ -45,12 +46,12 @@ public class NetworkingEventController {
 
     //Если будет время сделать разделить методы в репозиториях
     @Operation(summary = "Создать мероприятие")
-    @PostMapping("")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Mono<NetworkingEventResponseDto> createNetworkingEvent(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
-            @RequestBody NetworkingEventRequestDto requestDto
+            @ModelAttribute NetworkingEventRequestDto requestDto
     ) {
-        return service.createNetworkingEvent(authToken, requestDto);
+        return service.createNetworkingEvent(authToken, requestDto, requestDto.getImage());
     }
 
     @Operation(summary = "Редактирование мероприятий тут если поле нулл - то зануллит")

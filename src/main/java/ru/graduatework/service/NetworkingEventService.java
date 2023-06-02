@@ -3,7 +3,9 @@ package ru.graduatework.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+import ru.graduatework.common.FlagFile;
 import ru.graduatework.common.NetworkingEventPaginatedFilter;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.NetworkingEventRequestDto;
@@ -12,6 +14,7 @@ import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.controller.dto.UpdateNetworkingEventRequestDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.mapper.NetworkingEventDtoMapper;
+import ru.graduatework.repository.FileSystemRepository;
 import ru.graduatework.repository.NetworkingEventRepository;
 
 @Service
@@ -22,6 +25,7 @@ public class NetworkingEventService {
     private final JwtService jwtService;
     private final AuthorService authorService;
 
+    private final FileSystemRepository fileSystemRepository;
     private final NetworkingEventRepository networkingEventRepository;
     private final PostgresOperatingDb db;
 
@@ -32,7 +36,7 @@ public class NetworkingEventService {
     }
 
     public Mono<Boolean> update(UpdateNetworkingEventRequestDto requestDto) {
-        var networkingEventRecord = networkingEventDtoMapper.map(requestDto);
+        var networkingEventRecord = networkingEventDtoMapper.mapForUpdate(requestDto);
         return db.execAsync(ctx -> networkingEventRepository.update(ctx, networkingEventRecord, networkingEventRecord.getId()));
     }
 
@@ -44,12 +48,27 @@ public class NetworkingEventService {
         return db.execAsync(ctx -> networkingEventRepository.getPaginatedListOfEvents(ctx, filter));
     }
 
-    public Mono<NetworkingEventResponseDto> createNetworkingEvent(String authToken, NetworkingEventRequestDto requestDto) {
+    public Mono<NetworkingEventResponseDto> createNetworkingEvent(String authToken, NetworkingEventRequestDto requestDto, MultipartFile image) {
         var jwt = authToken.substring(7);
         var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
-        var author = authorService.getByUserId(userId);
+        var authorId = authorService.getByUserId(userId).getId();
 
-        return db.execAsync(ctx -> networkingEventDtoMapper.map(networkingEventRepository.createNetworkingEvent(ctx, requestDto, author.getId())));
+        return db.execAsync(ctx -> {
+            var newNetworkingEventRecord = networkingEventDtoMapper.mapForCreate(requestDto);
+            networkingEventRepository.createNetworkingEvent(ctx, newNetworkingEventRecord, authorId);
+
+            String newPath = null;
+            try {
+                newPath = fileSystemRepository.save(image.getBytes(), newNetworkingEventRecord.getId(), FlagFile.EVENT_AVATAR);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            networkingEventRepository.addAvatar(ctx, newPath, newNetworkingEventRecord.getId());
+
+
+            return networkingEventRepository.getById(ctx, newNetworkingEventRecord.getId());
+        });
     }
 
 }

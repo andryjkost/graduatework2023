@@ -1,11 +1,13 @@
 package ru.graduatework.model;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.graduatework.common.NetworkingEventStatus;
 
 import java.time.OffsetDateTime;
 
 @Data
+@Builder
 public class NetworkingEventModel {
     private Long id;
 
