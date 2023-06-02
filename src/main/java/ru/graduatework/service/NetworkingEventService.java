@@ -9,6 +9,7 @@ import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.NetworkingEventRequestDto;
 import ru.graduatework.controller.dto.NetworkingEventResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
+import ru.graduatework.controller.dto.UpdateNetworkingEventRequestDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.mapper.NetworkingEventDtoMapper;
 import ru.graduatework.repository.NetworkingEventRepository;
@@ -26,8 +27,13 @@ public class NetworkingEventService {
 
     private final NetworkingEventDtoMapper networkingEventDtoMapper;
 
-    public Mono<NetworkingEventResponseDto> getById(Long id){
-        return db.execAsync(ctx-> networkingEventRepository.getById(ctx, id));
+    public Mono<NetworkingEventResponseDto> getById(Long id) {
+        return db.execAsync(ctx -> networkingEventRepository.getById(ctx, id));
+    }
+
+    public Mono<Boolean> update(UpdateNetworkingEventRequestDto requestDto) {
+        var networkingEventRecord = networkingEventDtoMapper.map(requestDto);
+        return db.execAsync(ctx -> networkingEventRepository.update(ctx, networkingEventRecord, networkingEventRecord.getId()));
     }
 
     public Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getPaginatedListOfEvents(NetworkingEventPaginatedFilter filter, String authToken) {
@@ -43,7 +49,7 @@ public class NetworkingEventService {
         var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
         var author = authorService.getByUserId(userId);
 
-        return db.execAsync(ctx-> networkingEventDtoMapper.map(networkingEventRepository.createNetworkingEvent(ctx, requestDto, author.getId())));
+        return db.execAsync(ctx -> networkingEventDtoMapper.map(networkingEventRepository.createNetworkingEvent(ctx, requestDto, author.getId())));
     }
 
 }

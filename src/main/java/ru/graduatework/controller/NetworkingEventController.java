@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.common.NetworkingEventPaginatedFilter;
 import ru.graduatework.common.NetworkingEventStatus;
-import ru.graduatework.controller.dto.NetworkingEventRequestDto;
-import ru.graduatework.controller.dto.NetworkingEventResponseDto;
-import ru.graduatework.controller.dto.PaginatedResponseDto;
+import ru.graduatework.controller.dto.*;
 import ru.graduatework.service.NetworkingEventService;
 
 @RestController
@@ -22,6 +20,7 @@ import ru.graduatework.service.NetworkingEventService;
 public class NetworkingEventController {
 
     private final NetworkingEventService service;
+
     @Operation(summary = "Получение списка мероприятий c фильтрацией и пагинацией")
     @GetMapping("")
     Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getPaginatedByParams(
@@ -50,15 +49,17 @@ public class NetworkingEventController {
     Mono<NetworkingEventResponseDto> createNetworkingEvent(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
             @RequestBody NetworkingEventRequestDto requestDto
-            ) {
+    ) {
         return service.createNetworkingEvent(authToken, requestDto);
     }
 
-    @Operation(summary = "Редактирование мероприятий (нулл в полях если не нужно менять")
+    @Operation(summary = "Редактирование мероприятий тут если поле нулл - то зануллит")
     @PutMapping("")
-    Mono<Boolean> updateNetworkingEvent() {
+    Mono<Boolean> updateNetworkingEvent(
+            @RequestBody UpdateNetworkingEventRequestDto requestDto
+    ) {
 
-        return Mono.empty();
+        return service.update(requestDto);
     }
 
     @Operation(summary = "Получение мероприятия по id")

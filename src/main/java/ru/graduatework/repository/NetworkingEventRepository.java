@@ -13,7 +13,6 @@ import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.AuthorNetworkingEventRecord;
 import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
-import ru.graduatework.mapper.NetworkingEventDtoMapper;
 import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
@@ -138,6 +137,13 @@ public class NetworkingEventRepository {
 
         return newNetworkingEvent;
 
+    }
+
+    public boolean update(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, Long id){
+        return ctx.dsl().update(NETWORKING_EVENT)
+                .set(networkingEventRecord)
+                .where(NETWORKING_EVENT.ID.eq(id))
+                .execute() == 1;
     }
 
 }
