@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.graduatework.controller.dto.FieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingContext;
+import ru.graduatework.jooq.tables.records.FieldOfActivityRecord;
 
 import java.util.List;
 
@@ -41,5 +42,19 @@ public class FieldOfActivityRepository {
                 .totalCount(result.size())
                 .count(result.size())
                 .build();
+    }
+
+    public Boolean create(PostgresOperatingContext ctx, FieldOfActivityRecord record) {
+        return ctx.dsl().insertInto(FIELD_OF_ACTIVITY).set(record).execute() == 1;
+    }
+
+    public Boolean update(PostgresOperatingContext ctx, FieldOfActivityRecord record, Long id) {
+        return ctx.dsl().update(FIELD_OF_ACTIVITY)
+                .set(record)
+                .where(FIELD_OF_ACTIVITY.ID.eq(id)).execute() == 1;
+    }
+
+    public FieldOfActivityRecord getById(PostgresOperatingContext ctx, Long id) {
+        return ctx.dsl().selectFrom(FIELD_OF_ACTIVITY).where(FIELD_OF_ACTIVITY.ID.eq(id)).fetchOneInto(FieldOfActivityRecord.class);
     }
 }
