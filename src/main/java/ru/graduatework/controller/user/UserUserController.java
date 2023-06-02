@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.UpdateUserRequestDto;
 import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
-import ru.graduatework.services.UserService;
+import ru.graduatework.service.UserService;
 
 import javax.validation.Valid;
 

@@ -12,7 +12,7 @@ import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.controller.dto.NetworkingEventRequestDto;
 import ru.graduatework.controller.dto.NetworkingEventResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
-import ru.graduatework.services.NetworkingEventService;
+import ru.graduatework.service.NetworkingEventService;
 
 @RestController
 @RequestMapping("/api/v1/networking_event")

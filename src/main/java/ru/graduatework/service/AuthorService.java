@@ -1,4 +1,4 @@
-package ru.graduatework.services;
+package ru.graduatework.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

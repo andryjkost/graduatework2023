@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.*;
-import ru.graduatework.services.ArticleService;
+import ru.graduatework.service.ArticleService;
 
 @RestController
 @RequestMapping("/api/v1/article")

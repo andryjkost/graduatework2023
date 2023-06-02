@@ -1,4 +1,4 @@
-package ru.graduatework.services;
+package ru.graduatework.service;
 
 
 import lombok.RequiredArgsConstructor;

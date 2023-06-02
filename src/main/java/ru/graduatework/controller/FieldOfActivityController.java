@@ -10,7 +10,7 @@ import ru.graduatework.controller.dto.FieldsOfActivityRequestDto;
 import ru.graduatework.controller.dto.FieldsOfActivityResponseDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.controller.dto.UpdateFieldsOfActivityRequestDto;
-import ru.graduatework.services.FieldOfActivityService;
+import ru.graduatework.service.FieldOfActivityService;
 
 @RestController
 @RequestMapping("/api/v1/activity")

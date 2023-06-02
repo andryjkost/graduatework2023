@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.AuthenticationRequestDto;
 import ru.graduatework.controller.dto.AuthenticationResponseDto;
-import ru.graduatework.services.AuthenticationService;
+import ru.graduatework.service.AuthenticationService;
 import ru.graduatework.controller.dto.RefreshJwtRequestDto;
 import ru.graduatework.controller.dto.RegisterRequestDto;
 

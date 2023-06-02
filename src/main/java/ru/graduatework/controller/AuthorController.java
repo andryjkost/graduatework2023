@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.AuthenticationResponseDto;
 import ru.graduatework.controller.dto.AuthorRequestDto;
 import ru.graduatework.controller.dto.CourseResponseDto;
-import ru.graduatework.services.AuthorService;
+import ru.graduatework.service.AuthorService;
 
 @RestController
 @RequestMapping("/api/v1/author")
