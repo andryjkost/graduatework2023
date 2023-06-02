@@ -26,12 +26,15 @@ public class NetworkingEventService {
 
     private final NetworkingEventDtoMapper networkingEventDtoMapper;
 
+    public Mono<NetworkingEventResponseDto> getById(Long id){
+        return db.execAsync(ctx-> networkingEventRepository.getById(ctx, id));
+    }
+
     public Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getPaginatedListOfEvents(NetworkingEventPaginatedFilter filter, String authToken) {
         var jwt = authToken.substring(7);
         var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
         filter.setUserId(userId);
 
-//        var author = authorService.getByUserId(userId);
         return db.execAsync(ctx -> networkingEventRepository.getPaginatedListOfEvents(ctx, filter));
     }
 

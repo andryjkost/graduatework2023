@@ -27,7 +27,27 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class NetworkingEventRepository {
 
-    private final NetworkingEventDtoMapper mapper;
+    public NetworkingEventResponseDto getById(PostgresOperatingContext ctx, Long id) {
+        return ctx.dsl().select(NETWORKING_EVENT.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
+                .from(NETWORKING_EVENT
+                        .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
+                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID)))
+                .where(NETWORKING_EVENT.ID.eq(id))
+                .fetchOne(record -> NetworkingEventResponseDto.builder()
+                        .id((Long) record.get(0))
+                        .title((String) record.get(1))
+                        .description((String) record.get(2))
+                        .link((String) record.get(3))
+                        .startTime((OffsetDateTime) record.get(4))
+                        .status(NetworkingEventStatus.valueOf((String) record.get(5)))
+                        .maximumNumberOfParticipants((Long) record.get(6))
+                        .numberOfAvailableSeats((Long) record.get(7))
+                        .authorShortModel(AuthorShortModel.builder()
+                                .id((Long) record.get(8))
+                                .firstLastName(Utils.getFullName((String) record.get(9), (String) record.get(10)))
+                                .build())
+                        .build());
+    }
 
     public PaginatedResponseDto<NetworkingEventResponseDto> getPaginatedListOfEvents(PostgresOperatingContext ctx, NetworkingEventPaginatedFilter filter) {
         var filterCondition = DSL.noCondition();

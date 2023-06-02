@@ -45,5 +45,10 @@ jwt:
 
 file-system:
   storage:
-    avatar: /home/andrej/user_avatar/
-    video:
+    avatar: /home/user_avatar/
+    video:  /home/video_By_Cource/
+
+networking-event-shedule:
+   enable: true
+   cron: "0 * * * * ?"
+

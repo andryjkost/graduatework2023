@@ -22,7 +22,6 @@ import ru.graduatework.service.NetworkingEventService;
 public class NetworkingEventController {
 
     private final NetworkingEventService service;
-    //доделать добавление инфы автора
     @Operation(summary = "Получение списка мероприятий c фильтрацией и пагинацией")
     @GetMapping("")
     Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getPaginatedByParams(
@@ -45,7 +44,7 @@ public class NetworkingEventController {
         return service.getPaginatedListOfEvents(filter, authToken);
     }
 
-    //доделать инфу про авторов
+    //Если будет время сделать разделить методы в репозиториях
     @Operation(summary = "Создать мероприятие")
     @PostMapping("")
     Mono<NetworkingEventResponseDto> createNetworkingEvent(
@@ -55,21 +54,26 @@ public class NetworkingEventController {
         return service.createNetworkingEvent(authToken, requestDto);
     }
 
-    @Operation(summary = "")
+    @Operation(summary = "Редактирование мероприятий (нулл в полях если не нужно менять")
     @PutMapping("")
-    Mono<Void> updateNetworkingEvent() {
+    Mono<Boolean> updateNetworkingEvent() {
+
         return Mono.empty();
     }
 
-    @Operation(summary = "")
-    @GetMapping("/id")
-    Mono<Void> getNetworkingEventById() {
-        return Mono.empty();
+    @Operation(summary = "Получение мероприятия по id")
+    @GetMapping("/{id}")
+    Mono<NetworkingEventResponseDto> getNetworkingEventById(
+            @Parameter(description = "Идентификатор мероприятия") @PathVariable Long id
+    ) {
+
+        return service.getById(id);
     }
 
-    @Operation(summary = "")
+    @Operation(summary = "Получение мероприятий за период")
     @GetMapping("/date")
-    Mono<Void> getNetworkingEventByDate() {
+    Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getNetworkingEventByDate() {
+
         return Mono.empty();
     }
 
