@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.graduatework.model.AuthorShortModel;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +19,7 @@ public class ArticleShortResponseDto {
 
     @Schema(description = "Название статьи")
     private String title;
+
+    @Schema(description = "Информация об авторе статьи")
+    private AuthorShortModel authorShortModel;
 }

@@ -54,18 +54,29 @@ public class ArticleRepository {
     }
 
     public PaginatedResponseDto<ArticleShortResponseDto> getPaginatedShortArticle(PostgresOperatingContext ctx, int offset, int limit) {
-        var selectQuery = ctx.dsl().selectFrom(ARTICLE).orderBy(ARTICLE.TIME_OF_CREATION_OR_MODIFICATION.desc());
+        var selectQuery = ctx.dsl()
+                .select(ARTICLE.ID, ARTICLE.TITLE, AUTHOR.ID, AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
+                .from(ARTICLE
+                        .leftJoin(AUTHOR_ARTICLE).on(ARTICLE.ID.eq(AUTHOR_ARTICLE.ARTICLE_ID))
+                        .leftJoin(AUTHOR).on(AUTHOR.ID.eq(AUTHOR_ARTICLE.AUTHOR_ID)))
+                .orderBy(ARTICLE.TIME_OF_CREATION_OR_MODIFICATION.desc());
 
         var totalCount = ctx.dsl()
                 .selectCount()
                 .from(selectQuery)
                 .fetchOneInto(Integer.class);
-        var articleList = selectQuery
+
+        var result = selectQuery
                 .offset(offset)
                 .limit(limit > 0 ? limit : null)
-                .fetchInto(ArticleRecord.class);
-
-        var result = articleDtoMapper.mapShort(articleList);
+                .fetch().map(record-> ArticleShortResponseDto.builder()
+                        .id((Long) record.get(0))
+                        .title((String) record.get(1))
+                        .authorShortModel(AuthorShortModel.builder()
+                                .id((Long) record.get(2))
+                                .firstLastName(Utils.getFullName((String) record.get(4), (String) record.get(3)))
+                                .build())
+                        .build());
 
         return PaginatedResponseDto.<ArticleShortResponseDto>builder()
                 .count(result.size())
