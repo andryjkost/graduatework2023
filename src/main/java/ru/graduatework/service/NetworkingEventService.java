@@ -2,6 +2,7 @@ package ru.graduatework.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
@@ -33,6 +34,18 @@ public class NetworkingEventService {
 
     public Mono<NetworkingEventResponseDto> getById(Long id) {
         return db.execAsync(ctx -> networkingEventRepository.getById(ctx, id));
+    }
+
+    public Mono<FileSystemResource> getAvatar(String authToken, Long id) {
+        return db.execAsync(ctx -> {
+            var avatarPath = networkingEventRepository.getAvatarPathById(ctx, id);
+            if (avatarPath != null) {
+                FileSystemResource avatarFile = fileSystemRepository.findInFileSystem(avatarPath);
+                return avatarFile;
+            } else {
+                return null;
+            }
+        });
     }
 
     public Mono<Boolean> update(UpdateNetworkingEventRequestDto requestDto) {

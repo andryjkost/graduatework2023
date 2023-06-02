@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +71,15 @@ public class NetworkingEventController {
     ) {
 
         return service.getById(id);
+    }
+
+    @Operation(summary = "Получение Аватарки")
+    @GetMapping(value = "/avatar/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    Mono<FileSystemResource> getAvatar(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @Parameter(description = "Идентификатор мероприятия") @PathVariable Long id
+    ){
+        return service.getAvatar(authToken, id);
     }
 
     @Operation(summary = "Получение мероприятий за период")

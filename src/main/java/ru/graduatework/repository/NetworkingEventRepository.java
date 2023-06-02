@@ -26,6 +26,14 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class NetworkingEventRepository {
 
+
+    public String getAvatarPathById(PostgresOperatingContext ctx, Long id){
+        return ctx.dsl().select(NETWORKING_EVENT.PATH_AVATAR)
+                .from(NETWORKING_EVENT)
+                .where(NETWORKING_EVENT.ID.eq(id))
+                .fetchOneInto(String.class);
+    }
+
     public NetworkingEventResponseDto getById(PostgresOperatingContext ctx, Long id) {
         return ctx.dsl().select(NETWORKING_EVENT.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
                 .from(NETWORKING_EVENT
@@ -95,8 +103,8 @@ public class NetworkingEventRepository {
                         .maximumNumberOfParticipants((Long) record.get(6))
                         .numberOfAvailableSeats((Long) record.get(7))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((Long) record.get(8))
-                                .firstLastName(Utils.getFullName((String) record.get(9), (String) record.get(10)))
+                                .id((Long) record.get(9))
+                                .firstLastName(Utils.getFullName((String) record.get(10), (String) record.get(11)))
                                 .build())
                         .build());
 
