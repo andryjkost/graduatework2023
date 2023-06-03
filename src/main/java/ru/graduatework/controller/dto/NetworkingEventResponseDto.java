@@ -42,6 +42,9 @@ public class NetworkingEventResponseDto {
     @Schema(description = "Кол-во свободных мест")
     private Long numberOfAvailableSeats;
 
+    @Schema(description = "Картинка")
+    private byte[] image;
+
     @Schema(description = "Инфа об авторе")
     private AuthorShortModel authorShortModel;
 }

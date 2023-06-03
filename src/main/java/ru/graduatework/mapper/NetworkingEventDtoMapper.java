@@ -7,6 +7,7 @@ import ru.graduatework.controller.dto.NetworkingEventRequestDto;
 import ru.graduatework.controller.dto.NetworkingEventResponseDto;
 import ru.graduatework.controller.dto.UpdateNetworkingEventRequestDto;
 import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
+import ru.graduatework.model.NetworkingEventModel;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -21,9 +22,12 @@ public interface NetworkingEventDtoMapper {
     @Mapping(target = "numberOfAvailableSeats", source = "maximumNumberOfParticipants")
     NetworkingEventRecord mapForCreate(NetworkingEventRequestDto requestDto);
 
+    @Mapping(target = "startTime", expression = "java(OffsetDateTime.parse(requestDto.getStartTime()))")
     NetworkingEventRecord mapForUpdate(UpdateNetworkingEventRequestDto requestDto);
 
     NetworkingEventResponseDto map(NetworkingEventRecord record);
+
+    NetworkingEventResponseDto map(NetworkingEventModel record);
 
     //    @Mapping(target = "authorId", source = "consumer.email")
 //    @Mapping(target = "authorFirstLastNames", source = "consumer.email")

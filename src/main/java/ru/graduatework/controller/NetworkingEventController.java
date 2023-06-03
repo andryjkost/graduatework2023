@@ -58,12 +58,13 @@ public class NetworkingEventController {
     }
 
     @Operation(summary = "Редактирование мероприятий тут если поле нулл - то зануллит")
-    @PutMapping("")
+    @PutMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Mono<Boolean> updateNetworkingEvent(
-            @RequestBody UpdateNetworkingEventRequestDto requestDto
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @ModelAttribute UpdateNetworkingEventRequestDto requestDto
     ) {
 
-        return service.update(requestDto);
+        return service.update(authToken, requestDto);
     }
 
     @Operation(summary = "Получение мероприятия по id")
@@ -73,15 +74,6 @@ public class NetworkingEventController {
     ) {
 
         return service.getById(id);
-    }
-
-    @Operation(summary = "Получение Аватарки")
-    @GetMapping(value = "/avatar/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    Mono<FileSystemResource> getAvatar(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
-            @Parameter(description = "Идентификатор мероприятия") @PathVariable UUID id
-    ){
-        return service.getAvatar(authToken, id);
     }
 
     @Operation(summary = "Получение мероприятий за период")
