@@ -15,9 +15,9 @@ import static ru.graduatework.jooq.Tables.AUTHOR_ARTICLE;
 @RequiredArgsConstructor
 public class AuthorArticleRepository {
 
-    public void createAuthorArticle(PostgresOperatingContext ctx, Long authorId, Long articleId) {
+    public void createAuthorArticle(PostgresOperatingContext ctx, UUID authorId, UUID articleId) {
         ctx.dsl().insertInto(AUTHOR_ARTICLE).set(
-                new AuthorArticleRecord(UUID.randomUUID().getLeastSignificantBits(), authorId, articleId)
+                new AuthorArticleRecord(UUID.randomUUID(), authorId, articleId)
         ).execute();
     }
 }

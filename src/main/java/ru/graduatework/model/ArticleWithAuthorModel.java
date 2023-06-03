@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +16,7 @@ import java.time.OffsetDateTime;
 @Schema(description = "Статья c автором")
 public class ArticleWithAuthorModel {
     @Schema(description = "ID")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Название статьи")
     private String title;

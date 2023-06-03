@@ -10,11 +10,11 @@
             </not>
         </preConditions>
         <createTable tableName="subscription" remarks="Подписки пользователей на курсы" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="course_id" type="BIGINT" remarks="Идентификатор курса"/>
-            <column name="user_id" type="BIGINT" remarks="Идентификатор пользователя"/>
+            <column name="course_id" type="uuid" remarks="Идентификатор курса"/>
+            <column name="user_id" type="uuid" remarks="Идентификатор пользователя"/>
             <column name="subscribed_at" type="timestamptz" remarks="Дата подписки"/>
             <column name="unsubscribed_at" type="timestamptz" remarks="Дата отписки"/>
             <column name="state" type="VARCHAR(255)" remarks="Статус подписки"/>

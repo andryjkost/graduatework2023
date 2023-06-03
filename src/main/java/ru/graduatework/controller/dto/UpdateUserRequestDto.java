@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static ru.graduatework.common.ValidationUtils.EMAIL_VALIDATION_PATTERN;
 import static ru.graduatework.common.ValidationUtils.FIO_VALIDATION_PATTERN;
@@ -19,7 +20,7 @@ import static ru.graduatework.common.ValidationUtils.FIO_VALIDATION_PATTERN;
 public class UpdateUserRequestDto {
 
     @Schema(description = "id обновляемого пользователя(заберется из токена)")
-    private Long id;
+    private UUID id;
 
     @Email(regexp = EMAIL_VALIDATION_PATTERN, message = "Адрес электронной почты должен быть корректным")
     @Schema(description = "Электронная почта")

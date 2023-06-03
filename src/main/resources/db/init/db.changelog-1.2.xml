@@ -10,7 +10,7 @@
             </not>
         </preConditions>
         <createTable tableName="article" remarks="Статья" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
 
@@ -27,7 +27,7 @@
             </not>
         </preConditions>
         <createTable tableName="course" remarks="Курс" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
 
@@ -46,7 +46,7 @@
             </not>
         </preConditions>
         <createTable tableName="networking_event" remarks="Нетворкинг мероприятие" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
 

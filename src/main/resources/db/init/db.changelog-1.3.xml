@@ -10,7 +10,7 @@
             </not>
         </preConditions>
         <addColumn tableName="token" schemaName="graduatework">
-            <column name="user_id" type="BIGINT">
+            <column name="user_id" type="uuid">
                 <constraints nullable="false" unique="false"/>
             </column>
         </addColumn>

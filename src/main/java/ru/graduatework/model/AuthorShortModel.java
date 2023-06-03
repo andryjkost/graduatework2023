@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class AuthorShortModel {
 
     @Schema(description = "ID")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "FI")
     private String firstLastName;

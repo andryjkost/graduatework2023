@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,7 @@ import java.time.OffsetDateTime;
 public class ArticleResponseDto {
 
     @Schema(description = "ID")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Название статьи")
     private String title;

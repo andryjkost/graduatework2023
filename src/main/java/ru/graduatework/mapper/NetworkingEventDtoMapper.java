@@ -15,7 +15,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", imports = {UUID.class, NetworkingEventStatus.class, OffsetDateTime.class})
 public interface NetworkingEventDtoMapper {
 
-    @Mapping(target = "id", expression = "java(UUID.randomUUID().getLeastSignificantBits())")
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     @Mapping(target = "status", expression = "java(NetworkingEventStatus.TO_BE.name())")
     @Mapping(target = "startTime", expression = "java(OffsetDateTime.parse(requestDto.getStartTime()))")
     @Mapping(target = "numberOfAvailableSeats", source = "maximumNumberOfParticipants")

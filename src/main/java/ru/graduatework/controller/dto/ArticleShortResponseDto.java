@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.graduatework.model.AuthorShortModel;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,7 +17,7 @@ import ru.graduatework.model.AuthorShortModel;
 public class ArticleShortResponseDto {
 
     @Schema(description = "ID")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Название статьи")
     private String title;

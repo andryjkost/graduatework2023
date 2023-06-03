@@ -10,7 +10,7 @@
             </not>
         </preConditions>
         <createTable tableName="author" remarks="Информация об Авторах" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
 
@@ -48,11 +48,11 @@
             </not>
         </preConditions>
         <createTable tableName="author_field_of_activity" remarks="Связка сферы интересов и авторов" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="author_id" type="BIGINT"/>
-            <column name="field_of_activity_id" type="BIGINT"/>
+            <column name="author_id" type="uuid"/>
+            <column name="field_of_activity_id" type="uuid"/>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="author_id"
@@ -80,11 +80,11 @@
             </not>
         </preConditions>
         <createTable tableName="author_course" remarks="Связка курсов и авторов" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="author_id" type="BIGINT"/>
-            <column name="course_id" type="BIGINT"/>
+            <column name="author_id" type="uuid"/>
+            <column name="course_id" type="uuid"/>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="author_id"
@@ -111,11 +111,11 @@
             </not>
         </preConditions>
         <createTable tableName="author_networking_event" remarks="Связка мероприятий и авторов" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="author_id" type="BIGINT"/>
-            <column name="networking_event_id" type="BIGINT"/>
+            <column name="author_id" type="uuid"/>
+            <column name="networking_event_id" type="uuid"/>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="author_id"

@@ -14,6 +14,8 @@ import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.controller.dto.*;
 import ru.graduatework.service.NetworkingEventService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/networking_event")
 @RequiredArgsConstructor
@@ -67,7 +69,7 @@ public class NetworkingEventController {
     @Operation(summary = "Получение мероприятия по id")
     @GetMapping("/{id}")
     Mono<NetworkingEventResponseDto> getNetworkingEventById(
-            @Parameter(description = "Идентификатор мероприятия") @PathVariable Long id
+            @Parameter(description = "Идентификатор мероприятия") @PathVariable UUID id
     ) {
 
         return service.getById(id);
@@ -77,7 +79,7 @@ public class NetworkingEventController {
     @GetMapping(value = "/avatar/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     Mono<FileSystemResource> getAvatar(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
-            @Parameter(description = "Идентификатор мероприятия") @PathVariable Long id
+            @Parameter(description = "Идентификатор мероприятия") @PathVariable UUID id
     ){
         return service.getAvatar(authToken, id);
     }

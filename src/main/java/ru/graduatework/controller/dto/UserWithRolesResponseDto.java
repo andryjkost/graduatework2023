@@ -4,11 +4,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.graduatework.common.Role;
 
+import java.util.UUID;
+
 @NoArgsConstructor
 @Data
 public class UserWithRolesResponseDto  {
 
-    private Long id;
+    private UUID id;
     private String email;
     private String firstName;
     private String lastName;

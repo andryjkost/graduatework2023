@@ -23,13 +23,13 @@
             </not>
         </preConditions>
         <createTable tableName="user_networking_event" schemaName="graduatework" remarks="Таблица для отслеживания на какие мероприятия записались пользователи">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="user_id" type="BIGINT">
+            <column name="user_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="networking_event_id" type="BIGINT">
+            <column name="networking_event_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import ru.graduatework.common.NetworkingEventStatus;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +15,7 @@ import java.time.OffsetDateTime;
 public class UpdateNetworkingEventRequestDto{
 
     @Schema(description = "id")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Название мероприятия")
     private String title;
