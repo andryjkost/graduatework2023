@@ -154,4 +154,23 @@ public class UserService {
             return Mono.empty();
         }
     }
+
+    public Mono<PaginatedResponseDto<UserWithFieldsOfActivityResponseDto>> getPaginated(int offset, int limit) {
+        return db.execAsync(ctx -> {
+            var tuple = userRepo.getPaginated(ctx, offset, limit);
+
+            var listUser = tuple.getT2();
+            var totalCount = tuple.getT1();
+
+            listUser.forEach(record -> {
+                record.setFieldOfActivitys(fieldOfActivityRepository.getListFieldOfActivityByUserId(ctx, record.getId()));
+            });
+
+            return PaginatedResponseDto.<UserWithFieldsOfActivityResponseDto>builder()
+                    .totalCount(totalCount)
+                    .result(listUser)
+                    .count(listUser.size())
+                    .build();
+        });
+    }
 }
