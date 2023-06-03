@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 import lombok.NonNull;
@@ -171,5 +172,9 @@ public class JwtService {
     public String getUserIdFromJwt(String jwt) {
         final Claims claims = getAccessClaims(jwt);
         return claims.get("id").toString();
+    }
+
+    public UUID getUserIdByToken(String token) {
+        return UUID.fromString(getUserIdFromJwt(token));
     }
 }

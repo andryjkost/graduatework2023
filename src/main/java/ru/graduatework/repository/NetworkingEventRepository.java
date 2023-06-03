@@ -27,21 +27,21 @@ import static ru.graduatework.jooq.Tables.*;
 public class NetworkingEventRepository {
 
 
-    public String getAvatarPathById(PostgresOperatingContext ctx, Long id){
+    public String getAvatarPathById(PostgresOperatingContext ctx, UUID id){
         return ctx.dsl().select(NETWORKING_EVENT.PATH_AVATAR)
                 .from(NETWORKING_EVENT)
                 .where(NETWORKING_EVENT.ID.eq(id))
                 .fetchOneInto(String.class);
     }
 
-    public NetworkingEventResponseDto getById(PostgresOperatingContext ctx, Long id) {
+    public NetworkingEventResponseDto getById(PostgresOperatingContext ctx, UUID id) {
         return ctx.dsl().select(NETWORKING_EVENT.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
                 .from(NETWORKING_EVENT
                         .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
                         .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID)))
                 .where(NETWORKING_EVENT.ID.eq(id))
                 .fetchOne(record -> NetworkingEventResponseDto.builder()
-                        .id((Long) record.get(0))
+                        .id((UUID) record.get(0))
                         .title((String) record.get(1))
                         .description((String) record.get(2))
                         .link((String) record.get(3))
@@ -50,7 +50,7 @@ public class NetworkingEventRepository {
                         .maximumNumberOfParticipants((Long) record.get(6))
                         .numberOfAvailableSeats((Long) record.get(7))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((Long) record.get(9))
+                                .id((UUID) record.get(9))
                                 .firstLastName(Utils.getFullName((String) record.get(10), (String) record.get(11)))
                                 .build())
                         .build());
@@ -94,7 +94,7 @@ public class NetworkingEventRepository {
                 .offset(filter.getOffset())
                 .limit(filter.getLimit() > 0 ? filter.getLimit() : null)
                 .fetch().map(record -> NetworkingEventResponseDto.builder()
-                        .id((Long) record.get(0))
+                        .id((UUID) record.get(0))
                         .title((String) record.get(1))
                         .description((String) record.get(2))
                         .link((String) record.get(3))
@@ -103,7 +103,7 @@ public class NetworkingEventRepository {
                         .maximumNumberOfParticipants((Long) record.get(6))
                         .numberOfAvailableSeats((Long) record.get(7))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((Long) record.get(9))
+                                .id((UUID) record.get(9))
                                 .firstLastName(Utils.getFullName((String) record.get(10), (String) record.get(11)))
                                 .build())
                         .build());
@@ -116,27 +116,27 @@ public class NetworkingEventRepository {
                 .build();
     }
 
-    public void createNetworkingEvent(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, Long authorId) {
+    public void createNetworkingEvent(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, UUID authorId) {
 
         var newNetworkingEvent = ctx.dsl().insertInto(NETWORKING_EVENT).set(networkingEventRecord).returning().fetchOne();
 
 
         AuthorNetworkingEventRecord newAuthorNetworkingEventRecord = new AuthorNetworkingEventRecord();
-        newAuthorNetworkingEventRecord.setId(UUID.randomUUID().getLeastSignificantBits());
+        newAuthorNetworkingEventRecord.setId(UUID.randomUUID());
         newAuthorNetworkingEventRecord.setAuthorId(authorId);
         newAuthorNetworkingEventRecord.setNetworkingEventId(newNetworkingEvent.getId());
 
         ctx.dsl().insertInto(AUTHOR_NETWORKING_EVENT).set(newAuthorNetworkingEventRecord).execute();
     }
 
-    public void addAvatar(PostgresOperatingContext ctx, String path, Long id) {
+    public void addAvatar(PostgresOperatingContext ctx, String path, UUID id) {
         ctx.dsl().update(NETWORKING_EVENT)
                 .set(NETWORKING_EVENT.PATH_AVATAR, path)
                 .where(NETWORKING_EVENT.ID.eq(id)).execute();
 
     }
 
-    public boolean update(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, Long id) {
+    public boolean update(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, UUID id) {
         return ctx.dsl().update(NETWORKING_EVENT)
                 .set(networkingEventRecord)
                 .where(NETWORKING_EVENT.ID.eq(id))

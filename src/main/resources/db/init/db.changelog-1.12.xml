@@ -21,7 +21,7 @@
             </not>
         </preConditions>
         <addColumn tableName="author" schemaName="graduatework">
-            <column name="user_id" type="BIGINT" remarks="ID юзера"/>
+            <column name="user_id" type="uuid" remarks="ID юзера"/>
         </addColumn>
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="author"

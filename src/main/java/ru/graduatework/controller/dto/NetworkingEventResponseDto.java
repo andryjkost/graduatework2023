@@ -10,6 +10,7 @@ import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +19,7 @@ import java.time.OffsetDateTime;
 @Schema(description = "Нетворкинг мероприятие")
 public class NetworkingEventResponseDto {
     @Schema(description = "id мероприятия")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Название мероприятия")
     private String title;

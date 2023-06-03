@@ -11,7 +11,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", imports = {UUID.class})
 public interface FieldOfActivityMapper {
 
-    @Mapping(target = "id", expression = "java(UUID.randomUUID().getLeastSignificantBits())")
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     FieldOfActivityRecord mapForCreate(FieldsOfActivityRequestDto requestDto);
 
     FieldOfActivityRecord mapForUpdate(UpdateFieldsOfActivityRequestDto requestDto);

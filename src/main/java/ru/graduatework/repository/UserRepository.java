@@ -13,6 +13,7 @@ import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.UserRecord;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static ru.graduatework.error.Code.USER_NOT_FOUND;
 import static ru.graduatework.jooq.tables.User.USER;
@@ -30,11 +31,11 @@ public class UserRepository {
         return ctx.dsl().insertInto(USER).set(record).returning().fetchOne();
     }
 
-    public String getAvatarPath(PostgresOperatingContext ctx, Long id){
+    public String getAvatarPath(PostgresOperatingContext ctx, UUID id){
         return ctx.dsl().select(USER.AVATAR).from(USER).where(USER.ID.eq(id)).fetchOneInto(String.class);
     }
 
-    public UserRecord getById(PostgresOperatingContext ctx, Long id) {
+    public UserRecord getById(PostgresOperatingContext ctx, UUID id) {
         var result = ctx.dsl().selectFrom(USER)
                 .where(USER.ID.eq(id))
                 .fetchOne();
@@ -55,7 +56,7 @@ public class UserRepository {
                 .fetchOne();
     }
 
-    public Integer countUsersByEmail(PostgresOperatingContext ctx, String email, Long userId) {
+    public Integer countUsersByEmail(PostgresOperatingContext ctx, String email, UUID userId) {
         var condition = DSL.noCondition();
 
         if (userId != null) {
@@ -68,20 +69,20 @@ public class UserRepository {
                 .fetchOneInto(Integer.class);
     }
 
-    public Boolean updateUserUpdated(PostgresOperatingContext ctx, OffsetDateTime date, Long userId){
+    public Boolean updateUserUpdated(PostgresOperatingContext ctx, OffsetDateTime date, UUID userId){
         return ctx.dsl().update(USER)
                 .set(USER.UPDATED, date)
                 .where(USER.ID.eq(userId))
                 .execute() == 1;
     }
 
-    public Boolean updateUserAvatar(PostgresOperatingContext ctx, String newPath, Long userId){
+    public Boolean updateUserAvatar(PostgresOperatingContext ctx, String newPath, UUID userId){
         return ctx.dsl().update(USER)
                 .set(USER.AVATAR, newPath)
                 .where(USER.ID.eq(userId))
                 .execute() == 1;
     }
-    public Boolean updateUserInfo(PostgresOperatingContext ctx, Long userId, UpdateUserRequestDto updateDto) {
+    public Boolean updateUserInfo(PostgresOperatingContext ctx, UUID userId, UpdateUserRequestDto updateDto) {
         return ctx.dsl().transactionResult(tctx -> {
             var userRecord =
                     tctx.dsl()
@@ -129,7 +130,7 @@ public class UserRepository {
         });
     }
 
-    public String uploadImage(MultipartFile image, Long userId) throws Exception {
+    public String uploadImage(MultipartFile image, UUID userId) throws Exception {
         return fileSystemRepository.save(image.getBytes(), userId, FlagFile.USER_AVATAR);
     }
 }

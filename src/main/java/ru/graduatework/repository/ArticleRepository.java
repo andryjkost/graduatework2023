@@ -14,6 +14,7 @@ import ru.graduatework.model.ArticleWithAuthorModel;
 import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static ru.graduatework.jooq.Tables.*;
 
@@ -24,7 +25,7 @@ public class ArticleRepository {
 
     private final ArticleDtoMapper articleDtoMapper;
 
-    public Boolean update(PostgresOperatingContext ctx, ArticleRecord articleRecord, Long articleId){
+    public Boolean update(PostgresOperatingContext ctx, ArticleRecord articleRecord, UUID articleId){
         return ctx.dsl().update(ARTICLE)
                 .set(articleRecord)
                 .where(ARTICLE.ID.eq(articleId)).execute() == 1;
@@ -34,7 +35,7 @@ public class ArticleRepository {
         return ctx.dsl().insertInto(ARTICLE).set(articleRecord).returning().fetchOne();
     }
 
-    public ArticleWithAuthorModel getById(PostgresOperatingContext ctx, Long id) {
+    public ArticleWithAuthorModel getById(PostgresOperatingContext ctx, UUID id) {
         return ctx.dsl()
                 .select(ARTICLE.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
                 .from(ARTICLE
@@ -42,12 +43,12 @@ public class ArticleRepository {
                         .leftJoin(AUTHOR).on(AUTHOR_ARTICLE.AUTHOR_ID.eq(AUTHOR.ID)))
                 .where(ARTICLE.ID.eq(id))
                 .fetchOne(record -> ArticleWithAuthorModel.builder()
-                        .id((Long) record.get(0))
+                        .id((UUID) record.get(0))
                         .title((String) record.getValue(1))
                         .textArticle((String) record.getValue(2))
                         .timeModification((OffsetDateTime) record.get(3))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((Long) record.get(4))
+                                .id((UUID) record.get(4))
                                 .firstLastName(Utils.getFullName((String) record.get(5), (String) record.get(6)))
                                 .build())
                         .build());
@@ -70,10 +71,10 @@ public class ArticleRepository {
                 .offset(offset)
                 .limit(limit > 0 ? limit : null)
                 .fetch().map(record-> ArticleShortResponseDto.builder()
-                        .id((Long) record.get(0))
+                        .id((UUID) record.get(0))
                         .title((String) record.get(1))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((Long) record.get(2))
+                                .id((UUID) record.get(2))
                                 .firstLastName(Utils.getFullName((String) record.get(4), (String) record.get(3)))
                                 .build())
                         .build());

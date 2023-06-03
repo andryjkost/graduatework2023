@@ -4,12 +4,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Data
 public class UserWithFieldsOfActivityResponseDto {
 
-    private Long id;
+    private UUID id;
     private String email;
     private String firstName;
     private String lastName;

@@ -2,6 +2,8 @@ package ru.graduatework.common;
 
 import lombok.*;
 
+import java.util.UUID;
+
 
 @Data
 @Builder
@@ -12,5 +14,5 @@ public class NetworkingEventPaginatedFilter {
     private  int limit;
     private  NetworkingEventStatus status;
     private  Boolean eventSubscriptionFlag;
-    private  Long userId;
+    private UUID userId;
 }

@@ -10,11 +10,11 @@
             </not>
         </preConditions>
         <createTable tableName="author_article" remarks="Связка статей и авторов" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="author_id" type="BIGINT"/>
-            <column name="article_id" type="BIGINT"/>
+            <column name="author_id" type="uuid"/>
+            <column name="article_id" type="uuid"/>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="author_id"

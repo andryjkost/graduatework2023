@@ -16,6 +16,7 @@ import ru.graduatework.repository.AuthorArticleRepository;
 import ru.graduatework.repository.AuthorRepository;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import static ru.graduatework.error.Code.NOT_AUTHOR_THIS_ARTICLE;
 
@@ -34,8 +35,7 @@ public class ArticleService {
     private final ArticleDtoMapper articleDtoMapper;
 
     public Mono<Boolean> updateArticle(String authToken, UpdateArticleRequestDto requestDto) {
-        var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = jwtService.getUserIdByToken(authToken.substring(7));
         var articleRecord = articleDtoMapper.mapToUpdate(requestDto);
         return db.execAsync(ctx -> {
             var authorId = authorRepository.getByUserId(ctx, userId).getId();
@@ -61,13 +61,12 @@ public class ArticleService {
 
     }
 
-    public Mono<ArticleResponseDto> getArticleById(Long articleId) {
+    public Mono<ArticleResponseDto> getArticleById(UUID articleId) {
         return db.execAsync(ctx -> articleRepository.getById(ctx, articleId)).map(articleDtoMapper::map);
     }
 
     public Mono<Void> createArticle(String authToken, ArticleRequestDto requestDto) {
-        var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = jwtService.getUserIdByToken(authToken.substring(7));
 
         return db.execAsync(ctx -> {
             var newArticleId = articleRepository.createArticle(ctx, articleDtoMapper.mapToCreate(requestDto)).getId();

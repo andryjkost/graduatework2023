@@ -18,6 +18,8 @@ import ru.graduatework.mapper.NetworkingEventDtoMapper;
 import ru.graduatework.repository.FileSystemRepository;
 import ru.graduatework.repository.NetworkingEventRepository;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,11 +34,11 @@ public class NetworkingEventService {
 
     private final NetworkingEventDtoMapper networkingEventDtoMapper;
 
-    public Mono<NetworkingEventResponseDto> getById(Long id) {
+    public Mono<NetworkingEventResponseDto> getById(UUID id) {
         return db.execAsync(ctx -> networkingEventRepository.getById(ctx, id));
     }
 
-    public Mono<FileSystemResource> getAvatar(String authToken, Long id) {
+    public Mono<FileSystemResource> getAvatar(String authToken, UUID id) {
         return db.execAsync(ctx -> {
             var avatarPath = networkingEventRepository.getAvatarPathById(ctx, id);
             if (avatarPath != null) {
@@ -55,15 +57,14 @@ public class NetworkingEventService {
 
     public Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getPaginatedListOfEvents(NetworkingEventPaginatedFilter filter, String authToken) {
         var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
         filter.setUserId(userId);
 
         return db.execAsync(ctx -> networkingEventRepository.getPaginatedListOfEvents(ctx, filter));
     }
 
     public Mono<NetworkingEventResponseDto> createNetworkingEvent(String authToken, NetworkingEventRequestDto requestDto, MultipartFile image) {
-        var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = jwtService.getUserIdByToken(authToken.substring(7));
         var authorId = authorService.getByUserId(userId).getId();
 
         return db.execAsync(ctx -> {
