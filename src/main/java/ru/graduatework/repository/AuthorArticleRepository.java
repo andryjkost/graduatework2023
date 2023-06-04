@@ -20,4 +20,9 @@ public class AuthorArticleRepository {
                 new AuthorArticleRecord(UUID.randomUUID(), authorId, articleId)
         ).execute();
     }
+
+    public AuthorArticleRecord getByAuthorIdAndCourseId(PostgresOperatingContext ctx, UUID authorId, UUID articleId) {
+        return ctx.dsl().selectFrom(AUTHOR_ARTICLE)
+                .where(AUTHOR_ARTICLE.AUTHOR_ID.eq(authorId).and(AUTHOR_ARTICLE.ARTICLE_ID.eq(articleId))).fetchOne();
+    }
 }

@@ -20,4 +20,10 @@ public class AuthorCourseRepository {
                 new AuthorCourseRecord(UUID.randomUUID(), authorId, courseId)
         ).execute();
     }
+
+    public AuthorCourseRecord getByAuthorIdAndCourseId(PostgresOperatingContext ctx, UUID authorId, UUID courseId){
+        return ctx.dsl().selectFrom(AUTHOR_COURSE)
+                .where(AUTHOR_COURSE.AUTHOR_ID.eq(authorId), AUTHOR_COURSE.COURSE_ID.eq(courseId))
+                .fetchOne();
+    }
 }
