@@ -42,7 +42,7 @@ public class ArticleController {
 
     @Operation(summary = "Создание статьи")
     @PostMapping("")
-    Mono<Void> createArticle(
+    Mono<UUID> createArticle(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
             @RequestBody ArticleRequestDto requestDto
     ) {

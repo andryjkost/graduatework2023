@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @CrossOrigin(originPatterns = "*", allowCredentials = "true")
-@Tag(description = "Работа с пользователями(админка", name = "AdminController")
+@Tag(description = "Работа с пользователями(админка)", name = "AdminController")
 public class AdminController {
 
     private final UserService userService;

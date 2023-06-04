@@ -28,7 +28,7 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class CourseRepository {
 
-    private final static String userIdAlias = "USER_ID";
+    private final static String userIdAlias = "USER_IDS";
 
     public void addAvatar(PostgresOperatingContext ctx, String path, UUID id) {
         ctx.dsl().update(COURSE)

@@ -84,14 +84,14 @@ public class ArticleService {
         });
     }
 
-    public Mono<Void> createArticle(String authToken, ArticleRequestDto requestDto) {
+    public Mono<UUID> createArticle(String authToken, ArticleRequestDto requestDto) {
         var userId = jwtService.getUserIdByToken(authToken.substring(7));
 
         return db.execAsync(ctx -> {
             var newArticleId = articleRepository.createArticle(ctx, articleDtoMapper.mapToCreate(requestDto)).getId();
             var authorId = authorRepository.getByUserId(ctx, userId).getId();
             authorArticleRepository.createAuthorArticle(ctx, authorId, newArticleId);
-            return null;
+            return newArticleId;
         });
 
     }
