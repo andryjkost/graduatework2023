@@ -14,7 +14,7 @@ import static ru.graduatework.jooq.tables.CourseArticle.COURSE_ARTICLE;
 @Repository
 @RequiredArgsConstructor
 public class CourseArticleRepository {
-    public boolean create(PostgresOperatingContext ctx, UUID courseId, UUID articleId) {
+    public boolean create(PostgresOperatingContext ctx, UUID articleId, UUID courseId) {
         return ctx.dsl().insertInto(COURSE_ARTICLE).set(new CourseArticleRecord(UUID.randomUUID(), courseId, articleId)).execute() == 1;
     }
 

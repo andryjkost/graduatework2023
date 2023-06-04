@@ -25,6 +25,8 @@ public interface ArticleDtoMapper {
     //    @Mapping(target = "timeModification", source = "timeOfCreationOrModification")
     ArticleResponseDto map(ArticleWithAuthorModel articleRecord);
 
+    ArticleShortResponseDto mapShort(ArticleWithAuthorModel articleRecord);
+
     ArticleShortResponseDto mapShort(ArticleRecord articleRecord);
 
     List<ArticleShortResponseDto> mapShort(List<ArticleRecord> articleRecords);

@@ -7,25 +7,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.graduatework.model.AuthorShortModel;
 
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-@Schema(description = "Статья")
-public class ArticleShortResponseDto {
-
-    @Schema(description = "ID")
+@Schema(description = "Краткая информация о связанном курсе")
+public class CourseInfoShortForArticleResponseDto {
+    @Schema(description = "id курса")
     private UUID id;
 
-    @Schema(description = "Название статьи")
+    @Schema(description = "Название курса")
     private String title;
 
-    @Schema(description = "Связанные курсы")
-    private List<CourseInfoShortForArticleResponseDto> courseInfoShortForArticleResponseDto;
-
-    @Schema(description = "Информация об авторе статьи")
     private AuthorShortModel authorShortModel;
 }

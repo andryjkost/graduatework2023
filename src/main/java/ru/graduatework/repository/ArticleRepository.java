@@ -2,11 +2,10 @@ package ru.graduatework.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 import ru.graduatework.common.Utils;
-import ru.graduatework.controller.dto.ArticleShortResponseDto;
-import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.ArticleRecord;
 import ru.graduatework.mapper.ArticleDtoMapper;
@@ -14,6 +13,7 @@ import ru.graduatework.model.ArticleWithAuthorModel;
 import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static ru.graduatework.jooq.Tables.*;
@@ -23,9 +23,7 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class ArticleRepository {
 
-    private final ArticleDtoMapper articleDtoMapper;
-
-    public Boolean update(PostgresOperatingContext ctx, ArticleRecord articleRecord, UUID articleId){
+    public boolean update(PostgresOperatingContext ctx, ArticleRecord articleRecord, UUID articleId) {
         return ctx.dsl().update(ARTICLE)
                 .set(articleRecord)
                 .where(ARTICLE.ID.eq(articleId)).execute() == 1;
@@ -54,9 +52,10 @@ public class ArticleRepository {
                         .build());
     }
 
-    public PaginatedResponseDto<ArticleShortResponseDto> getPaginatedShortArticle(PostgresOperatingContext ctx, int offset, int limit) {
+    public Tuple2<Integer, List<ArticleWithAuthorModel>> getPaginatedShortArticle(PostgresOperatingContext ctx, int offset, int limit) {
         var selectQuery = ctx.dsl()
-                .select(ARTICLE.ID, ARTICLE.TITLE, AUTHOR.ID, AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
+                .select(ARTICLE.ID, ARTICLE.TITLE,
+                        AUTHOR.ID, AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
                 .from(ARTICLE
                         .leftJoin(AUTHOR_ARTICLE).on(ARTICLE.ID.eq(AUTHOR_ARTICLE.ARTICLE_ID))
                         .leftJoin(AUTHOR).on(AUTHOR.ID.eq(AUTHOR_ARTICLE.AUTHOR_ID)))
@@ -70,7 +69,7 @@ public class ArticleRepository {
         var result = selectQuery
                 .offset(offset)
                 .limit(limit > 0 ? limit : null)
-                .fetch().map(record-> ArticleShortResponseDto.builder()
+                .fetch().map(record -> ArticleWithAuthorModel.builder()
                         .id((UUID) record.get(0))
                         .title((String) record.get(1))
                         .authorShortModel(AuthorShortModel.builder()
@@ -79,10 +78,6 @@ public class ArticleRepository {
                                 .build())
                         .build());
 
-        return PaginatedResponseDto.<ArticleShortResponseDto>builder()
-                .count(result.size())
-                .result(result)
-                .totalCount(totalCount)
-                .build();
+        return Tuples.of(totalCount, result);
     }
 }

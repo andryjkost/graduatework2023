@@ -26,7 +26,7 @@
                              onDelete="CASCADE"
                              onUpdate="RESTRICT"
                              referencedColumnNames="id"
-                             referencedTableName="article"/>
+                             referencedTableName="course"/>
 
     <addForeignKeyConstraint baseColumnNames="article_id"
                              baseTableName="course_article"
@@ -34,6 +34,6 @@
                              onDelete="CASCADE"
                              onUpdate="RESTRICT"
                              referencedColumnNames="id"
-                             referencedTableName="course"/>
+                             referencedTableName="article"/>
 </changeSet>
         </databaseChangeLog>

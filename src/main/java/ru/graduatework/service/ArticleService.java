@@ -14,6 +14,7 @@ import ru.graduatework.mapper.ArticleDtoMapper;
 import ru.graduatework.repository.ArticleRepository;
 import ru.graduatework.repository.AuthorArticleRepository;
 import ru.graduatework.repository.AuthorRepository;
+import ru.graduatework.repository.CourseRepository;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -29,6 +30,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final AuthorRepository authorRepository;
     private final AuthorArticleRepository authorArticleRepository;
+    private final CourseRepository courseRepository;
 
     private final JwtService jwtService;
 
@@ -57,7 +59,19 @@ public class ArticleService {
     }
 
     public Mono<PaginatedResponseDto<ArticleShortResponseDto>> getPaginatedShortArticle(int offset, int limit) {
-        return db.execAsync(ctx -> articleRepository.getPaginatedShortArticle(ctx, offset, limit));
+        return db.execAsync(ctx -> {
+            var tuple = articleRepository.getPaginatedShortArticle(ctx, offset, limit);
+            var dtos = tuple.getT2().stream().map(model -> {
+                var dto = articleDtoMapper.mapShort(model);
+                dto.setCourseInfoShortForArticleResponseDto(courseRepository.getByArticleId(ctx, model.getId()));
+                return dto;
+            }).toList();
+            return PaginatedResponseDto.<ArticleShortResponseDto>builder()
+                    .count(dtos.size())
+                    .totalCount(tuple.getT1())
+                    .result(dtos)
+                    .build();
+        });
 
     }
 
