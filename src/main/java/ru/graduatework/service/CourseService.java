@@ -37,13 +37,13 @@ public class CourseService {
 
     private final CourseDtoMapper courseDtoMapper;
 
-    public Mono<Void> create(String authToken, CourseRequestDto courseRequestDto) {
+    public Mono<CourseResponseShortDto> create(String authToken, CourseRequestDto courseRequestDto) {
         var userId = jwtService.getUserIdByToken(authToken.substring(7));
         var authorId = authorService.getByUserId(userId).getId();
         return db.execAsync(ctx -> {
             var courseRecord = courseDtoMapper.mapForCreate(courseRequestDto);
 
-            courseRepository.create(ctx, courseRecord);
+            var course = courseDtoMapper.map(courseRepository.create(ctx, courseRecord));
             authorCourseRepository.createAuthorCourse(ctx, authorId, courseRecord.getId());
             if (courseRequestDto.getChapters() != null) {
                 chapterService.createByListForChapter(courseRequestDto.getChapters(), courseRecord.getId());
@@ -51,7 +51,7 @@ public class CourseService {
             if (courseRequestDto.getTopics() != null) {
                 topicService.createByListFromCourse(courseRequestDto.getTopics(), courseRecord.getId());
             }
-            return null;
+            return course;
         });
     }
 

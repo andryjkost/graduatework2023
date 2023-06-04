@@ -20,6 +20,8 @@ public interface CourseDtoMapper {
 
     CourseResponseShortDto map(CourseShortModel model);
 
+    CourseResponseShortDto map(CourseRecord model);
+
     @Mapping(target = "flagPayment", source = "model", qualifiedByName = "сheckSubscribeOnCourse")
     CourseResponseDto map(CourseModel model);
 

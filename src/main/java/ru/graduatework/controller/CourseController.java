@@ -67,7 +67,7 @@ public class CourseController {
 
     @Operation(summary = "Создание курса")
     @PostMapping("")
-    Mono<Void> createCourse(
+    Mono<CourseResponseShortDto> createCourse(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
             @RequestBody CourseRequestDto requestDto
     ) {

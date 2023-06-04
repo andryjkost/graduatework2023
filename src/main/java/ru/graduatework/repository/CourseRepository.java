@@ -36,10 +36,10 @@ public class CourseRepository {
 
     }
 
-    public Boolean create(PostgresOperatingContext ctx, CourseRecord courseRecord) {
+    public CourseRecord create(PostgresOperatingContext ctx, CourseRecord courseRecord) {
         return ctx.dsl().insertInto(COURSE)
                 .set(courseRecord)
-                .execute() == 1;
+                .returning().fetchOne();
 
     }
 
