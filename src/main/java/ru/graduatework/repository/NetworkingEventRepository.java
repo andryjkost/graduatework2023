@@ -37,24 +37,34 @@ public class NetworkingEventRepository {
     }
 
     public NetworkingEventModel getById(PostgresOperatingContext ctx, UUID id) {
-        return ctx.dsl().select(NETWORKING_EVENT.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
+        return ctx.dsl().select(
+                        NETWORKING_EVENT.ID,
+                        NETWORKING_EVENT.TITLE,
+                        NETWORKING_EVENT.DESCRIPTION,
+                        NETWORKING_EVENT.LINK,
+                        NETWORKING_EVENT.START_TIME,
+                        NETWORKING_EVENT.STATUS,
+                        NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS,
+                        NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS,
+                        NETWORKING_EVENT.PATH_AVATAR,
+                        AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
                 .from(NETWORKING_EVENT
                         .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
                         .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID)))
                 .where(NETWORKING_EVENT.ID.eq(id))
                 .fetchOne(record -> NetworkingEventModel.builder()
-                        .id((UUID) record.get(0))
-                        .title((String) record.get(1))
-                        .description((String) record.get(2))
-                        .link((String) record.get(3))
-                        .startTime((OffsetDateTime) record.get(4))
-                        .status(NetworkingEventStatus.valueOf((String) record.get(5)))
-                        .maximumNumberOfParticipants((Long) record.get(6))
-                        .numberOfAvailableSeats((Long) record.get(7))
-                        .pathToAvatar((String) record.get(8))
+                        .id(record.get(NETWORKING_EVENT.ID))
+                        .title(record.get(NETWORKING_EVENT.TITLE))
+                        .description(record.get(NETWORKING_EVENT.DESCRIPTION))
+                        .link(record.get(NETWORKING_EVENT.LINK))
+                        .startTime(record.get(NETWORKING_EVENT.START_TIME))
+                        .status(NetworkingEventStatus.valueOf((record.get(NETWORKING_EVENT.STATUS))))
+                        .maximumNumberOfParticipants(record.get(NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS))
+                        .numberOfAvailableSeats(record.get(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS))
+                        .pathToAvatar((record.get(NETWORKING_EVENT.PATH_AVATAR)))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((UUID) record.get(9))
-                                .firstLastName(Utils.getFullName((String) record.get(10), (String) record.get(11)))
+                                .id(record.get(AUTHOR.ID))
+                                .firstLastName(Utils.getFullName(record.get(AUTHOR.LAST_NAME), record.get(AUTHOR.FIRST_NAME)))
                                 .build())
                         .build());
     }
