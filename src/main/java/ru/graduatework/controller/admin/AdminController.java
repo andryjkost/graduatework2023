@@ -46,7 +46,7 @@ public class AdminController {
         return adminService.assignToCourseByUserId(authToken, userId, courseId);
     }
 
-    @Operation(summary = "Назначение на курс пользователя")
+    @Operation(summary = "Создание связки курса и статьи")
     @PostMapping("/linkingArticleWithCourse")
     Mono<Boolean> linkingArticleWithCourse(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
