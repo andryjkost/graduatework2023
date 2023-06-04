@@ -48,8 +48,8 @@ public class ArticleRepository {
                         .textArticle((String) record.getValue(2))
                         .timeModification((OffsetDateTime) record.get(3))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((UUID) record.get(4))
-                                .firstLastName(Utils.getFullName((String) record.get(5), (String) record.get(6)))
+                                .id((UUID) record.get(5))
+                                .firstLastName(Utils.getFullName((String) record.get(6), (String) record.get(7)))
                                 .build())
                         .build());
     }
