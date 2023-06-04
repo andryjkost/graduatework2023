@@ -6,9 +6,9 @@ import org.springframework.stereotype.Repository;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 import ru.graduatework.common.Utils;
+import ru.graduatework.controller.dto.ArticleinfoShortForCourseResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.ArticleRecord;
-import ru.graduatework.mapper.ArticleDtoMapper;
 import ru.graduatework.model.ArticleWithAuthorModel;
 import ru.graduatework.model.AuthorShortModel;
 
@@ -79,5 +79,23 @@ public class ArticleRepository {
                         .build());
 
         return Tuples.of(totalCount, result);
+    }
+
+    public List<ArticleinfoShortForCourseResponseDto> getByCourseId(PostgresOperatingContext ctx, UUID courseId) {
+        return ctx.dsl().select(ARTICLE.ID, ARTICLE.TITLE,
+                        AUTHOR.ID, AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
+                .from(ARTICLE
+                        .leftJoin(COURSE_ARTICLE).on(ARTICLE.ID.eq(COURSE_ARTICLE.ARTICLE_ID))
+                        .leftJoin(AUTHOR_ARTICLE).on(ARTICLE.ID.eq(AUTHOR_ARTICLE.ARTICLE_ID))
+                        .leftJoin(AUTHOR).on(AUTHOR_ARTICLE.AUTHOR_ID.eq(AUTHOR.ID)))
+                .where(COURSE_ARTICLE.COURSE_ID.eq(courseId))
+                .fetch(record -> ArticleinfoShortForCourseResponseDto.builder()
+                        .id(record.get(ARTICLE.ID))
+                        .title(record.get(ARTICLE.TITLE))
+                        .authorShortModel(AuthorShortModel.builder()
+                                .id(record.get(AUTHOR.ID))
+                                .firstLastName(Utils.getFullName(record.get(AUTHOR.LAST_NAME), record.get(AUTHOR.FIRST_NAME)))
+                                .build())
+                        .build());
     }
 }

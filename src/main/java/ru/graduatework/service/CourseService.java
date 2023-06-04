@@ -14,6 +14,7 @@ import ru.graduatework.controller.dto.CourseResponseShortDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.mapper.CourseDtoMapper;
+import ru.graduatework.repository.ArticleRepository;
 import ru.graduatework.repository.AuthorCourseRepository;
 import ru.graduatework.repository.CourseRepository;
 import ru.graduatework.repository.FileSystemRepository;
@@ -36,6 +37,7 @@ public class CourseService {
 
     private final FileSystemRepository fileSystemRepository;
     private final CourseRepository courseRepository;
+    private final ArticleRepository articleRepository;
 
     private final CourseDtoMapper courseDtoMapper;
 
@@ -97,6 +99,7 @@ public class CourseService {
             var models = tuple.getT1();
             var result = models.stream().map(model -> {
                 var dto = courseDtoMapper.map(model);
+                dto.setArticleinfoShortForCourseResponseDtos(articleRepository.getByCourseId(ctx,dto.getId()));
                 if (model.getPathToAvatar() != null) {
                     try {
                         dto.setImage(fileSystemRepository.findInFileSystem(model.getPathToAvatar()).getContentAsByteArray());
@@ -122,6 +125,7 @@ public class CourseService {
             var user = userService.getById(userId);
             var model = courseRepository.getById(ctx, id, userId);
             var course = courseDtoMapper.map(model);
+            course.setArticleinfoShortForCourseResponseDtos(articleRepository.getByCourseId(ctx, model.getId()));
 
             if (model.getPathToAvatar() != null) {
                 try {

@@ -32,6 +32,9 @@ public class CourseResponseDto {
     @Schema(description = "Фичи курса")
     private List<String> features;
 
+    @Schema(description = "Связанные статьи")
+    private List<ArticleinfoShortForCourseResponseDto> articleinfoShortForCourseResponseDtos;
+
     @Schema(description = "Картинка")
     private byte[] image;
 

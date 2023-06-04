@@ -76,7 +76,12 @@ public class ArticleService {
     }
 
     public Mono<ArticleResponseDto> getArticleById(UUID articleId) {
-        return db.execAsync(ctx -> articleRepository.getById(ctx, articleId)).map(articleDtoMapper::map);
+        return db.execAsync(ctx -> {
+            var model = articleRepository.getById(ctx, articleId);
+            var dto = articleDtoMapper.map(model);
+            dto.setCourseInfoShortForArticleResponseDto(courseRepository.getByArticleId(ctx, articleId));
+            return dto;
+        });
     }
 
     public Mono<Void> createArticle(String authToken, ArticleRequestDto requestDto) {

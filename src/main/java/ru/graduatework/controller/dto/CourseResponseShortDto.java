@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.graduatework.model.AuthorShortModel;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -29,6 +30,9 @@ public class CourseResponseShortDto {
 
     @Schema(description = "Картинка")
     private byte[] image;
+
+    @Schema(description = "Связанные статьи")
+    private List<ArticleinfoShortForCourseResponseDto> articleinfoShortForCourseResponseDtos;
 
     @Schema(description = "Инфа об авторе")
     private AuthorShortModel authorShortModel;
