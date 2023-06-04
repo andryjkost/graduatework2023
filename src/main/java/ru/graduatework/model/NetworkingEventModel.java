@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.graduatework.common.NetworkingEventStatus;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -19,6 +20,10 @@ public class NetworkingEventModel {
     private String link;
 
     private OffsetDateTime startTime;
+
+    private LocalTime durationOfEvent;
+
+    private Boolean eventSubscriptionFlag;
 
     private NetworkingEventStatus status;
 

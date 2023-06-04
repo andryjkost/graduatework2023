@@ -1,0 +1,16 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_duration_of_event_column_in_networking_event_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="networking_event" columnName="duration_of_event" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="networking_event">
+            <column name="duration_of_event" type="time" remarks="Длительность мероприятия"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
