@@ -28,10 +28,12 @@ public class TopicService {
     public void createByListFromChapter(List<TopicRequestDto> topics, UUID chapterId) {
         db.execute(ctx -> {
             var topicRecordList = topicDtoMapper.mapForCreate(topics);
-            topicRecordList.forEach(topicRecord -> {
-                topicRepository.create(ctx, topicRecord);
-                chapterTopicRepository.create(ctx, topicRecord.getId(), chapterId);
-            });
+            if (topicRecordList != null && !topicRecordList.isEmpty()) {
+                topicRecordList.forEach(topicRecord -> {
+                    topicRepository.create(ctx, topicRecord);
+                    chapterTopicRepository.create(ctx, topicRecord.getId(), chapterId);
+                });
+            }
             return null;
         });
     }
@@ -39,10 +41,12 @@ public class TopicService {
     public void createByListFromCourse(List<TopicRequestDto> topics, UUID courseId) {
         db.execute(ctx -> {
             var topicRecordList = topicDtoMapper.mapForCreate(topics);
-            topicRecordList.forEach(topicRecord -> {
-                topicRepository.create(ctx, topicRecord);
-                courseTopicRepository.create(ctx, topicRecord.getId(), courseId);
-            });
+            if (topicRecordList != null && !topicRecordList.isEmpty()) {
+                topicRecordList.forEach(topicRecord -> {
+                    topicRepository.create(ctx, topicRecord);
+                    courseTopicRepository.create(ctx, topicRecord.getId(), courseId);
+                });
+            }
             return null;
         });
     }
