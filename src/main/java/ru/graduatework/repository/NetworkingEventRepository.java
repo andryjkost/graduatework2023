@@ -16,9 +16,11 @@ import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
 import ru.graduatework.model.AuthorShortModel;
 import ru.graduatework.model.NetworkingEventModel;
 
-import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static ru.graduatework.common.NetworkingEventStatus.*;
 import static ru.graduatework.jooq.Tables.*;
@@ -28,6 +30,7 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class NetworkingEventRepository {
 
+    private final static String userIdAlias = "USER_IDS";
 
     public String getAvatarPathById(PostgresOperatingContext ctx, UUID id) {
         return ctx.dsl().select(NETWORKING_EVENT.PATH_AVATAR)
@@ -36,7 +39,7 @@ public class NetworkingEventRepository {
                 .fetchOneInto(String.class);
     }
 
-    public NetworkingEventModel getById(PostgresOperatingContext ctx, UUID id) {
+    public NetworkingEventModel getById(PostgresOperatingContext ctx, UUID id, UUID userId) {
         return ctx.dsl().select(
                         NETWORKING_EVENT.ID,
                         NETWORKING_EVENT.TITLE,
@@ -47,11 +50,15 @@ public class NetworkingEventRepository {
                         NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS,
                         NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS,
                         NETWORKING_EVENT.PATH_AVATAR,
-                        AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
+                        AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME,
+                        DSL.arrayAggDistinct(USER.ID).as(userIdAlias))
                 .from(NETWORKING_EVENT
                         .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
-                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID)))
+                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
+                        .leftJoin(USER_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID))
+                        .leftJoin(USER).on(USER_NETWORKING_EVENT.USER_ID.eq(USER.ID)))
                 .where(NETWORKING_EVENT.ID.eq(id))
+                .groupBy(NETWORKING_EVENT.ID, AUTHOR.ID)
                 .fetchOne(record -> NetworkingEventModel.builder()
                         .id(record.get(NETWORKING_EVENT.ID))
                         .title(record.get(NETWORKING_EVENT.TITLE))
@@ -59,9 +66,11 @@ public class NetworkingEventRepository {
                         .link(record.get(NETWORKING_EVENT.LINK))
                         .startTime(record.get(NETWORKING_EVENT.START_TIME))
                         .status(NetworkingEventStatus.valueOf((record.get(NETWORKING_EVENT.STATUS))))
+                        .userSubscribedIds(Arrays.stream(record.get(userIdAlias, UUID[].class)).filter(Objects::nonNull).collect(Collectors.toList()))
                         .maximumNumberOfParticipants(record.get(NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS))
                         .numberOfAvailableSeats(record.get(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS))
                         .pathToAvatar((record.get(NETWORKING_EVENT.PATH_AVATAR)))
+                        .userId(userId)
                         .authorShortModel(AuthorShortModel.builder()
                                 .id(record.get(AUTHOR.ID))
                                 .firstLastName(Utils.getFullName(record.get(AUTHOR.LAST_NAME), record.get(AUTHOR.FIRST_NAME)))
@@ -72,8 +81,29 @@ public class NetworkingEventRepository {
     public Tuple2<Integer, List<NetworkingEventModel>> getPaginatedListOfEvents(PostgresOperatingContext ctx, NetworkingEventPaginatedFilter filter) {
 
         var userIdAlias = "USER_ID";
+        var userSubselectAlias = "userSubselectAlias";
 
         var filterCondition = DSL.noCondition();
+
+        final var userSubselect = ctx.dsl()
+                .select(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID, DSL.arrayAggDistinct(USER.ID).as(userIdAlias))
+                .from(USER_NETWORKING_EVENT.leftJoin(USER).on(USER_NETWORKING_EVENT.USER_ID.eq(USER.ID)))
+                .groupBy(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID).asTable(userSubselectAlias);
+
+
+        if (filter.getStatus() != null) {
+            filterCondition = filterCondition.and(NETWORKING_EVENT.STATUS.eq(filter.getStatus().name()));
+        }
+
+//        not(exists(selectOne().from(table(values(a))).intersect(selectOne().from(table(values(b))))));
+//
+//        if (filter.getEventSubscriptionFlag() != null) {
+//            if (filter.getEventSubscriptionFlag()) {
+//                filterCondition = filterCondition.and(PostgresDSL.arrayOverlap(userSubselect.field(userIdAlias, UUID[].class), new UUID[]{filter.getUserId()}));
+//            } else {
+//                filterCondition = filterCondition.and(DSL.not(DSL.exists(DSL.selectOne().)));
+//            }
+//        }
 
         var selectQuery = ctx.dsl()
                 .select(NETWORKING_EVENT.ID,
@@ -82,35 +112,21 @@ public class NetworkingEventRepository {
                         NETWORKING_EVENT.STATUS, NETWORKING_EVENT.STATUS,
                         NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS, NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS,
                         NETWORKING_EVENT.PATH_AVATAR,
-                        DSL.arrayAggDistinct(USER_NETWORKING_EVENT.USER_ID).as(userIdAlias),
+                        userSubselect.field(userIdAlias),
                         AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
-                .from(NETWORKING_EVENT
+                .from(NETWORKING_EVENT)
                         .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
                         .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
-                        .leftJoin(USER_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID)));
-
-
-        if (filter.getStatus() != null) {
-            filterCondition = filterCondition.and(NETWORKING_EVENT.STATUS.eq(filter.getStatus().name()));
-        }
-
-        if (filter.getEventSubscriptionFlag() != null) {
-            if (filter.getEventSubscriptionFlag()) {
-                filterCondition = filterCondition.and(PostgresDSL.arrayOverlap(selectQuery.field(userIdAlias, UUID[].class), new UUID[]{filter.getUserId()}));
-            } else {
-                filterCondition = filterCondition.and(DSL.not(PostgresDSL.arrayOverlap(selectQuery.field(userIdAlias, UUID[].class), new UUID[]{filter.getUserId()})));
-            }
-        }
-
+                        .leftJoin(userSubselect)
+                        .on(NETWORKING_EVENT.ID.eq(userSubselect.field(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID)))
+                .where(filterCondition);
 
         var totalCount = ctx.dsl()
                 .selectCount()
-                .from(selectQuery.where(filterCondition).groupBy(NETWORKING_EVENT.ID, AUTHOR.ID))
+                .from(selectQuery)
                 .fetchOneInto(Integer.class);
 
         var listNetworkingEvent = selectQuery
-                .where(filterCondition)
-                .groupBy(NETWORKING_EVENT.ID, AUTHOR.ID)
                 .orderBy(
                         NETWORKING_EVENT.START_TIME.asc(),
                         DSL.case_()
@@ -164,5 +180,11 @@ public class NetworkingEventRepository {
                 .set(networkingEventRecord)
                 .where(NETWORKING_EVENT.ID.eq(id))
                 .execute() == 1;
+    }
+
+    public void setNumberOfAvailableSeats(PostgresOperatingContext ctx, UUID id, Long numberOfAvailableSeats) {
+        ctx.dsl().update(NETWORKING_EVENT)
+                .set(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS, numberOfAvailableSeats)
+                .where(NETWORKING_EVENT.ID.eq(id)).execute();
     }
 }

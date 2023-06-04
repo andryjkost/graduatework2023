@@ -2,17 +2,20 @@ package ru.graduatework.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.graduatework.common.FlagFile;
 import ru.graduatework.common.NetworkingEventPaginatedFilter;
+import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.*;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.mapper.NetworkingEventDtoMapper;
 import ru.graduatework.repository.FileSystemRepository;
 import ru.graduatework.repository.NetworkingEventRepository;
+import ru.graduatework.repository.UserNetworkingEventRepository;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -27,13 +30,20 @@ public class NetworkingEventService {
 
     private final FileSystemRepository fileSystemRepository;
     private final NetworkingEventRepository networkingEventRepository;
+    private final UserNetworkingEventRepository userNetworkingEventRepository;
     private final PostgresOperatingDb db;
 
     private final NetworkingEventDtoMapper networkingEventDtoMapper;
 
-    public Mono<NetworkingEventResponseDto> getById(UUID id) {
+    @Value("${networking-event.duration}")
+    private String durationOfEventDefault;
+
+    public Mono<NetworkingEventResponseDto> getById(String authToken, UUID id) {
+        var jwt = authToken.substring(7);
+        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
+
         return db.execAsync(ctx -> {
-            var model = networkingEventRepository.getById(ctx, id);
+            var model = networkingEventRepository.getById(ctx, id, userId);
             var result = networkingEventDtoMapper.map(model);
             if (model.getPathToAvatar() != null) {
                 try {
@@ -104,6 +114,10 @@ public class NetworkingEventService {
         var userId = jwtService.getUserIdByToken(authToken.substring(7));
         var authorId = authorService.getByUserId(userId).getId();
 
+        if (requestDto.getDurationOfEvent() == null) {
+            requestDto.setDurationOfEvent(durationOfEventDefault);
+        }
+
         return db.execAsync(ctx -> {
             var newNetworkingEventRecord = networkingEventDtoMapper.mapForCreate(requestDto);
             networkingEventRepository.createNetworkingEvent(ctx, newNetworkingEventRecord, authorId);
@@ -119,7 +133,7 @@ public class NetworkingEventService {
                 networkingEventRepository.addAvatar(ctx, newPath, newNetworkingEventRecord.getId());
             }
 
-            var model = networkingEventRepository.getById(ctx, newNetworkingEventRecord.getId());
+            var model = networkingEventRepository.getById(ctx, newNetworkingEventRecord.getId(), userId);
 
             var result = networkingEventDtoMapper.map(model);
             if (!model.getPathToAvatar().isEmpty()) {
@@ -135,4 +149,27 @@ public class NetworkingEventService {
         });
     }
 
+
+    public Mono<Boolean> signUpForEventById(String authToken, UUID id) {
+        var userId = jwtService.getUserIdByToken(authToken.substring(7));
+
+        return db.execAsync(ctx -> {
+            var model = networkingEventRepository.getById(ctx, id, userId);
+            var networkingEventResponseDto = networkingEventDtoMapper.map(model);
+            if (NetworkingEventStatus.PASSED.equals(networkingEventResponseDto.getStatus())) {
+                log.info("It is impossible to register for the event as it has passed");
+                return null;
+            }
+            if (networkingEventResponseDto.getEventSubscriptionFlag()) {
+                log.info("The user has already signed up for the event");
+                return null;
+            }
+            if(networkingEventResponseDto.getNumberOfAvailableSeats() == 0){
+                log.info("Places for events have run out");
+                return null;
+            }
+            networkingEventRepository.setNumberOfAvailableSeats(ctx, id, networkingEventResponseDto.getNumberOfAvailableSeats() - 1);
+            return userNetworkingEventRepository.create(ctx, id, userId);
+        });
+    }
 }

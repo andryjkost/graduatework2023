@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -70,10 +69,11 @@ public class NetworkingEventController {
     @Operation(summary = "Получение мероприятия по id")
     @GetMapping("/{id}")
     Mono<NetworkingEventResponseDto> getNetworkingEventById(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
             @Parameter(description = "Идентификатор мероприятия") @PathVariable UUID id
     ) {
 
-        return service.getById(id);
+        return service.getById(authToken, id);
     }
 
     @Operation(summary = "Получение мероприятий за период")
@@ -81,6 +81,15 @@ public class NetworkingEventController {
     Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getNetworkingEventByDate() {
 
         return Mono.empty();
+    }
+
+    @Operation(summary = "Записаться на мероприятие по id")
+    @PostMapping("/{id}/sign_up")
+    Mono<Boolean> signUpForEventById(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @Parameter(description = "Идентификатор мероприятия") @PathVariable UUID id
+    ) {
+        return service.signUpForEventById(authToken, id);
     }
 
 }

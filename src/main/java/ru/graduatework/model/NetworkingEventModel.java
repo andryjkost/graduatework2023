@@ -6,6 +6,7 @@ import ru.graduatework.common.NetworkingEventStatus;
 
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -23,7 +24,7 @@ public class NetworkingEventModel {
 
     private LocalTime durationOfEvent;
 
-    private Boolean eventSubscriptionFlag;
+    private List<UUID> userSubscribedIds;
 
     private NetworkingEventStatus status;
 
@@ -34,4 +35,6 @@ public class NetworkingEventModel {
     private String pathToAvatar;
 
     private AuthorShortModel authorShortModel;
+
+    private UUID userId;
 }

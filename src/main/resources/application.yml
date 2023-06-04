@@ -54,7 +54,9 @@ file-system:
     networking-event-avatar: /home/andrej/networking_event_avatar/
     course-avatar: /home/andrej/course_avatar/
 
-networking-event-shedule:
-   enable: true
-   cron: "0 * * * * ?"
+networking-event:
+  shedule:
+    enable: true
+    cron: "0 * * * * ?"
+  duration: 02:00
 

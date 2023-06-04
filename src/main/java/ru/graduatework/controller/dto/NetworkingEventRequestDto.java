@@ -32,6 +32,9 @@ public class NetworkingEventRequestDto {
     @NotNull
     private String startTime;
 
+    @Schema(description = "Длительность мероприятия. Формат: 02:00:00")
+    private String durationOfEvent;
+
     @Schema(description = "Максимальное кол-во участников")
     @NotNull
     private Long maximumNumberOfParticipants;
