@@ -9,16 +9,20 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.controller.dto.UserWithFieldsOfActivityResponseDto;
+import ru.graduatework.service.AdminService;
 import ru.graduatework.service.UserService;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @CrossOrigin(originPatterns = "*", allowCredentials = "true")
-@Tag(description = "Работа с пользователями(админка", name = "UserAdminController")
-public class UserAdminController {
+@Tag(description = "Работа с пользователями(админка", name = "AdminController")
+public class AdminController {
 
     private final UserService userService;
+    private final AdminService adminService;
 
     @Operation(summary = "Получение списка пользователей")
     @GetMapping("/users")
@@ -29,6 +33,15 @@ public class UserAdminController {
             @RequestParam(required = false, defaultValue = "10") int limit
     ) {
         return userService.getPaginated(offset, limit);
+    }
+
+    @Operation(summary = "Назначение на курс пользователя")
+    @PostMapping("/assignToCourse")
+    Mono<Boolean> assignToCourseByUserId(
+            @Parameter(description = "Идентификатор пользователя") @RequestParam UUID userId,
+            @Parameter(description = "Идентификатор курса") @RequestParam UUID courseId
+    ){
+        return adminService.assignToCourseByUserId(userId,courseId);
     }
 
 }
