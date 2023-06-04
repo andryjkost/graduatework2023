@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.model.AuthorShortModel;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -32,6 +33,12 @@ public class NetworkingEventResponseDto {
 
     @Schema(description = "Время начала мероприятия")
     private OffsetDateTime startTime;
+
+    @Schema(description = "Длительность мероприятия")
+    private LocalTime durationOfEvent;
+
+    @Schema(description = "Флаг подписки юзера на мероприятие")
+    private Boolean eventSubscriptionFlag;
 
     @Schema(description = "Статус мероприятия")
     private NetworkingEventStatus status;

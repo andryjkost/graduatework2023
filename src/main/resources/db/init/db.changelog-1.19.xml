@@ -1,0 +1,51 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="drop_course_chapter" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="course" schemaName="graduatework"/>
+        </preConditions>
+        <dropTable tableName="course_chapter" schemaName="graduatework"/>
+    </changeSet>
+
+    <changeSet id="add_priority_num_and_course_id_in_chapter_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="chapter" columnName="priority_number_of_the_section_in_the_course"
+                              schemaName="graduatework"/>
+                <columnExists tableName="chapter" columnName="priority_number_of_the_section_in_the_course"
+                              schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="chapter">
+            <column name="priority_number_of_the_section_in_the_course" type="BIGINT"
+                    remarks="Порядковый номер в курсе"/>
+        </addColumn>
+        <addColumn tableName="chapter">
+            <column name="course_id" type="uuid"
+                    remarks="Id курса"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_priority_num_in_topic_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="topic" columnName="priority_number_of_the_section" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="topic">
+            <column name="priority_number_of_the_section" type="BIGINT" remarks="Порядковый номер в курсе/разедел"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="drop_priority_number_of_the_section_in_the_course_in_course_topic" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="priority_number_of_the_section_in_the_course" tableName="course_topic"
+                          schemaName="graduatework"/>
+        </preConditions>
+        <dropColumn tableName="course_topic" columnName="priority_number_of_the_section_in_the_course"
+                    schemaName="graduatework"/>
+    </changeSet>
+</databaseChangeLog>

@@ -6,27 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
 @Schema(description = "Раздел")
-public class ChapterResponseDto {
-    @Schema(description = "id раздела")
-    private UUID id;
+public class ChapterRequestDto {
 
     @Schema(description = "Название раздела")
+    @NotNull
     private String title;
 
     @Schema(description = "Краткое описание раздела")
+    @NotNull
     private String description;
 
     private Integer priorityNumberOfTheSectionInTheCourse;
 
-    private List<TopicResponseDto> topics;
-
-
+    private List<TopicRequestDto> topics;
 }

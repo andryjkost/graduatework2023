@@ -16,7 +16,6 @@ import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
 import ru.graduatework.model.AuthorShortModel;
 import ru.graduatework.model.NetworkingEventModel;
 
-import javax.persistence.Tuple;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
