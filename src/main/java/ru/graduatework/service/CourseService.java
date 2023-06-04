@@ -8,12 +8,15 @@ import reactor.core.publisher.Mono;
 import ru.graduatework.common.FlagFile;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.CourseRequestDto;
+import ru.graduatework.controller.dto.CourseResponseShortDto;
+import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.mapper.CourseDtoMapper;
 import ru.graduatework.repository.AuthorCourseRepository;
 import ru.graduatework.repository.CourseRepository;
 import ru.graduatework.repository.FileSystemRepository;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -87,7 +90,27 @@ public class CourseService {
 
     }
 
-    public void getPaginated() {
+    public Mono<PaginatedResponseDto<CourseResponseShortDto>> getPaginated(int offset, int limit, String authToken) {
+        return db.execAsync(ctx -> {
+            var tuple = courseRepository.getPaginated(ctx, offset, limit);
+            var models = tuple.getT1();
+            var result = models.stream().map(model -> {
+                var dto = courseDtoMapper.map(model);
+                if (model.getPathToAvatar() != null) {
+                    try {
+                        dto.setImage(fileSystemRepository.findInFileSystem(model.getPathToAvatar()).getContentAsByteArray());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return dto;
+            }).toList();
+            return PaginatedResponseDto.<CourseResponseShortDto>builder()
+                    .result(result)
+                    .totalCount(tuple.getT2())
+                    .count(result.size())
+                    .build();
+        });
 
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.CourseRequestDto;
 import ru.graduatework.controller.dto.CourseResponseDto;
+import ru.graduatework.controller.dto.CourseResponseShortDto;
+import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.service.CourseService;
 
 import java.util.UUID;
@@ -26,11 +28,24 @@ public class CourseController {
 
     @Operation(summary = "Получение курса по id")
     @GetMapping("/{id}")
-    Mono<CourseResponseDto> getCourse(
+    Mono<CourseResponseDto> getCourseById(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
             @Parameter(description = "Идентификатор курса") @PathVariable UUID id
 
     ) {
         return Mono.just(new CourseResponseDto());
+    }
+
+    @Operation(summary = "Получение курсов с пагинацией")
+    @GetMapping("")
+    Mono<PaginatedResponseDto<CourseResponseShortDto>> getCourse(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @Parameter(description = "Отступ - число элементов, пропущенных от начала списка результатов", allowEmptyValue = true)
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @Parameter(description = "Ограничение на число показанных результатов", allowEmptyValue = true)
+            @RequestParam(required = false, defaultValue = "10") int limit
+    ) {
+        return courseService.getPaginated(offset, limit, authToken);
     }
 
     @Operation(summary = "Добавление/обновление Аватарки курса (JPEG в идиела, так хавает и PNG тоже)")
