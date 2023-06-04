@@ -13,10 +13,12 @@ import java.util.UUID;
 public interface TopicDtoMapper {
 
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    @Mapping(target = "pathVideo", source = "linkToVideo")
     TopicRecord mapForCreate(TopicRequestDto topicRequestDto);
 
     List<TopicRecord> mapForCreate(List<TopicRequestDto> topicRequestDtoList);
 
+    @Mapping(source = "pathVideo", target = "linkToVideo")
     TopicResponseDto map(TopicRecord topicRecord);
 
     List<TopicResponseDto> map(List<TopicRecord> topicRecords);

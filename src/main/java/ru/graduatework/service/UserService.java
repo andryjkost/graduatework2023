@@ -64,6 +64,14 @@ public class UserService {
         });
     }
 
+    public UserWithRolesResponseDto getById(UUID id) {
+        return db.execute(ctx -> {
+            var user = mapper.map(userRepo.getById(ctx, id));
+            user.setRole(roleRepository.getRoleByUserId(ctx, user.getId()));
+            return user;
+        });
+    }
+
     public UserWithRoleResponseDto getByEmailWithRole(String email) {
         return db.execute(ctx -> {
             var user = mapper.mapW(userRepo.getByEmail(ctx, email));

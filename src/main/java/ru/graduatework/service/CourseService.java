@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.graduatework.common.FlagFile;
+import ru.graduatework.common.Role;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.CourseRequestDto;
 import ru.graduatework.controller.dto.CourseResponseDto;
@@ -29,6 +30,7 @@ public class CourseService {
     private final ChapterService chapterService;
     private final TopicService topicService;
     private final AuthorCourseRepository authorCourseRepository;
+    private final UserService userService;
 
     private final PostgresOperatingDb db;
 
@@ -89,11 +91,6 @@ public class CourseService {
         });
     }
 
-
-    public void getById(UUID id, String authToken) {
-
-    }
-
     public Mono<PaginatedResponseDto<CourseResponseShortDto>> getPaginated(int offset, int limit, String authToken) {
         return db.execAsync(ctx -> {
             var tuple = courseRepository.getPaginated(ctx, offset, limit);
@@ -122,6 +119,7 @@ public class CourseService {
         var jwt = authToken.substring(7);
         var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
         return db.execAsync(ctx -> {
+            var user = userService.getById(userId);
             var model = courseRepository.getById(ctx, id, userId);
             var course = courseDtoMapper.map(model);
 
@@ -132,9 +130,10 @@ public class CourseService {
                     e.printStackTrace();
                 }
             }
-            if(!course.getFlagPayment()){
+            if (Role.USER.equals(user.getRole()) && !course.getFlagPayment()) {
                 return course;
             }
+
             course.setChapters(chapterService.getByCourseId(course.getId()));
             course.setTopics(topicService.getByCourseId(course.getId()));
             return course;
