@@ -3,14 +3,15 @@ package ru.graduatework.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.ChapterRequestDto;
+import ru.graduatework.controller.dto.ChapterResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.mapper.ChapterDtoMapper;
 import ru.graduatework.repository.ChapterRepository;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +34,10 @@ public class ChapterService {
             });
             return null;
         });
+    }
+
+    public List<ChapterResponseDto> getByCourseId(UUID courseId) {
+        return db.execute(ctx -> chapterDtoMapper.map(chapterRepository.getByCourseId(ctx, courseId))
+                .stream().peek(record -> record.setTopics(topicService.getByChapterId(record.getId()))).toList());
     }
 }

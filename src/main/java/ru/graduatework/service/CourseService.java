@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 import ru.graduatework.common.FlagFile;
 import ru.graduatework.config.JwtService;
 import ru.graduatework.controller.dto.CourseRequestDto;
+import ru.graduatework.controller.dto.CourseResponseDto;
 import ru.graduatework.controller.dto.CourseResponseShortDto;
 import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
@@ -44,9 +45,12 @@ public class CourseService {
 
             courseRepository.create(ctx, courseRecord);
             authorCourseRepository.createAuthorCourse(ctx, authorId, courseRecord.getId());
-            chapterService.createByListForChapter(courseRequestDto.getChapters(), courseRecord.getId());
-            topicService.createByListFromCourse(courseRequestDto.getTopics(), courseRecord.getId());
-
+            if (courseRequestDto.getChapters() != null) {
+                chapterService.createByListForChapter(courseRequestDto.getChapters(), courseRecord.getId());
+            }
+            if (courseRequestDto.getTopics() != null) {
+                topicService.createByListFromCourse(courseRequestDto.getTopics(), courseRecord.getId());
+            }
             return null;
         });
     }
@@ -56,7 +60,7 @@ public class CourseService {
 //        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
 //        var user = db.execute(ctx -> userRepo.getById(ctx, userId));
         return db.execAsync(ctx -> {
-            var course = courseRepository.getById(ctx, id);
+            var course = courseRepository.getByIdShort(ctx, id);
             if (image == null) {
                 if (course.getPathAvatar() != null) {
                     fileSystemRepository.delete(course.getPathAvatar());
@@ -77,7 +81,7 @@ public class CourseService {
 //        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
 
         return db.execAsync(ctx -> {
-            var avatarPath = courseRepository.getById(ctx, id).getPathAvatar();
+            var avatarPath = courseRepository.getByIdShort(ctx, id).getPathAvatar();
             courseRepository.addAvatar(ctx, null, id);
             fileSystemRepository.delete(avatarPath);
 
@@ -112,5 +116,28 @@ public class CourseService {
                     .build();
         });
 
+    }
+
+    public Mono<CourseResponseDto> getById(String authToken, UUID id) {
+        var jwt = authToken.substring(7);
+        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
+        return db.execAsync(ctx -> {
+            var model = courseRepository.getById(ctx, id, userId);
+            var course = courseDtoMapper.map(model);
+
+            if (model.getPathToAvatar() != null) {
+                try {
+                    course.setImage(fileSystemRepository.findInFileSystem(model.getPathToAvatar()).getContentAsByteArray());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(!course.getFlagPayment()){
+                return course;
+            }
+            course.setChapters(chapterService.getByCourseId(course.getId()));
+            course.setTopics(topicService.getByCourseId(course.getId()));
+            return course;
+        });
     }
 }

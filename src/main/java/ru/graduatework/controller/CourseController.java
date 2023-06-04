@@ -33,7 +33,7 @@ public class CourseController {
             @Parameter(description = "Идентификатор курса") @PathVariable UUID id
 
     ) {
-        return Mono.just(new CourseResponseDto());
+        return courseService.getById(authToken, id);
     }
 
     @Operation(summary = "Получение курсов с пагинацией")

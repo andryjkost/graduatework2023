@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.graduatework.controller.dto.TopicRequestDto;
+import ru.graduatework.controller.dto.TopicResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingDb;
 import ru.graduatework.mapper.TopicDtoMapper;
 import ru.graduatework.repository.ChapterTopicRepository;
@@ -51,4 +52,11 @@ public class TopicService {
         });
     }
 
+    public List<TopicResponseDto> getByChapterId(UUID chapterId){
+        return db.execute(ctx-> topicDtoMapper.map(topicRepository.getByChapterId(ctx,chapterId)));
+    }
+
+    public List<TopicResponseDto> getByCourseId(UUID courseId){
+        return db.execute(ctx-> topicDtoMapper.map(topicRepository.getByCourseId(ctx,courseId)));
+    }
 }

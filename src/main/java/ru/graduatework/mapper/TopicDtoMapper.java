@@ -3,6 +3,7 @@ package ru.graduatework.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.graduatework.controller.dto.TopicRequestDto;
+import ru.graduatework.controller.dto.TopicResponseDto;
 import ru.graduatework.jooq.tables.records.TopicRecord;
 
 import java.util.List;
@@ -15,5 +16,9 @@ public interface TopicDtoMapper {
     TopicRecord mapForCreate(TopicRequestDto topicRequestDto);
 
     List<TopicRecord> mapForCreate(List<TopicRequestDto> topicRequestDtoList);
+
+    TopicResponseDto map(TopicRecord topicRecord);
+
+    List<TopicResponseDto> map(List<TopicRecord> topicRecords);
 
 }
