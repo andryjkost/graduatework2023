@@ -50,6 +50,7 @@ public class NetworkingEventRepository {
                         NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS,
                         NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS,
                         NETWORKING_EVENT.PATH_AVATAR,
+                        NETWORKING_EVENT.DURATION_OF_EVENT,
                         AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME,
                         DSL.arrayAggDistinct(USER.ID).as(userIdAlias))
                 .from(NETWORKING_EVENT
@@ -65,6 +66,7 @@ public class NetworkingEventRepository {
                         .description(record.get(NETWORKING_EVENT.DESCRIPTION))
                         .link(record.get(NETWORKING_EVENT.LINK))
                         .startTime(record.get(NETWORKING_EVENT.START_TIME))
+                        .durationOfEvent(record.get(NETWORKING_EVENT.DURATION_OF_EVENT))
                         .status(NetworkingEventStatus.valueOf((record.get(NETWORKING_EVENT.STATUS))))
                         .userSubscribedIds(Arrays.stream(record.get(userIdAlias, UUID[].class)).filter(Objects::nonNull).collect(Collectors.toList()))
                         .maximumNumberOfParticipants(record.get(NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS))
