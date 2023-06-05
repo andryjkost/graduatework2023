@@ -57,6 +57,6 @@ file-system:
 networking-event:
   shedule:
     enable: true
-    cron: "0 * * * * ?"
-  duration: 02:00
+    cron: "0 * * * * *"
+  duration: "02:00"
 

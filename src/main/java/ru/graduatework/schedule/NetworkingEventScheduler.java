@@ -30,6 +30,5 @@ public class NetworkingEventScheduler {
         else {
             log.debug("networking-event status update service is disabled");
         }
-
     }
 }
