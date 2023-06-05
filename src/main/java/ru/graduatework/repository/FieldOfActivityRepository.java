@@ -10,6 +10,7 @@ import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.FieldOfActivityRecord;
 
 import java.util.List;
+import java.util.UUID;
 
 import static ru.graduatework.jooq.Tables.*;
 
@@ -18,7 +19,7 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class FieldOfActivityRepository {
 
-    public List<FieldsOfActivityResponseDto> getListFieldOfActivityByUserId(PostgresOperatingContext ctx, Long userId) {
+    public List<FieldsOfActivityResponseDto> getListFieldOfActivityByUserId(PostgresOperatingContext ctx, UUID userId) {
         return ctx.dsl()
                 .selectFrom(FIELD_OF_ACTIVITY
                         .join(USER_FIELD_OF_ACTIVITY)
@@ -48,13 +49,13 @@ public class FieldOfActivityRepository {
         return ctx.dsl().insertInto(FIELD_OF_ACTIVITY).set(record).execute() == 1;
     }
 
-    public Boolean update(PostgresOperatingContext ctx, FieldOfActivityRecord record, Long id) {
+    public Boolean update(PostgresOperatingContext ctx, FieldOfActivityRecord record, UUID id) {
         return ctx.dsl().update(FIELD_OF_ACTIVITY)
                 .set(record)
                 .where(FIELD_OF_ACTIVITY.ID.eq(id)).execute() == 1;
     }
 
-    public FieldOfActivityRecord getById(PostgresOperatingContext ctx, Long id) {
+    public FieldOfActivityRecord getById(PostgresOperatingContext ctx, UUID id) {
         return ctx.dsl().selectFrom(FIELD_OF_ACTIVITY).where(FIELD_OF_ACTIVITY.ID.eq(id)).fetchOneInto(FieldOfActivityRecord.class);
     }
 }

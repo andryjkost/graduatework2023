@@ -1,0 +1,12 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="drop_priority_number_of_the_section_in_the_chapter_in_chapter_topic" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="priority_number_of_the_section_in_the_chapter" tableName="chapter_topic" schemaName="graduatework"/>
+        </preConditions>
+        <dropColumn columnName="priority_number_of_the_section_in_the_chapter" tableName="chapter_topic" schemaName="graduatework"/>
+    </changeSet>
+</databaseChangeLog>

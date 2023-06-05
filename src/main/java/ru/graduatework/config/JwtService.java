@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 import lombok.NonNull;
@@ -57,7 +58,7 @@ public class JwtService {
             @NonNull UserWithRolesResponseDto userDetails
     ) {
         final LocalDateTime now = LocalDateTime.now();
-        final Instant accessExpirationInstant = now.plusMinutes(240).atZone(ZoneId.systemDefault()).toInstant();
+        final Instant accessExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         final Date accessExpiration = Date.from(accessExpirationInstant);
 
         return Jwts
@@ -75,7 +76,7 @@ public class JwtService {
 
     public String generateRefreshToken(@NonNull UserWithRolesResponseDto user) {
         final LocalDateTime now = LocalDateTime.now();
-        final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
+        final Instant refreshExpirationInstant = now.plusDays(200).atZone(ZoneId.systemDefault()).toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -171,5 +172,9 @@ public class JwtService {
     public String getUserIdFromJwt(String jwt) {
         final Claims claims = getAccessClaims(jwt);
         return claims.get("id").toString();
+    }
+
+    public UUID getUserIdByToken(String token) {
+        return UUID.fromString(getUserIdFromJwt(token));
     }
 }

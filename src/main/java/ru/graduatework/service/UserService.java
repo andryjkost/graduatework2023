@@ -40,7 +40,8 @@ public class UserService {
 
     public Mono<UserWithFieldsOfActivityResponseDto> getFullUserByToken(String authHeader) {
         var jwt = authHeader.substring(7);
-        var id = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var id = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
+//        Long.parseLong(jwtService.getUserIdFromJwt(jwt));
         return db.execAsync(ctx -> {
             var user = mapper.mapById(userRepo.getById(ctx, id));
             user.setFieldOfActivitys(fieldOfActivityRepository.getListFieldOfActivityByUserId(ctx, id));
@@ -63,6 +64,14 @@ public class UserService {
         });
     }
 
+    public UserWithRolesResponseDto getById(UUID id) {
+        return db.execute(ctx -> {
+            var user = mapper.map(userRepo.getById(ctx, id));
+            user.setRole(roleRepository.getRoleByUserId(ctx, user.getId()));
+            return user;
+        });
+    }
+
     public UserWithRoleResponseDto getByEmailWithRole(String email) {
         return db.execute(ctx -> {
             var user = mapper.mapW(userRepo.getByEmail(ctx, email));
@@ -77,7 +86,7 @@ public class UserService {
     public UserWithRolesResponseDto createUser(RegisterRequestDto request) {
         UserRecord newUser = new UserRecord();
 
-        newUser.setId(UUID.randomUUID().getLeastSignificantBits());
+        newUser.setId(UUID.randomUUID());
         newUser.setFirstName(request.getFirstname());
         newUser.setLastName(request.getLastname());
         newUser.setEmail(request.getEmail());
@@ -97,7 +106,7 @@ public class UserService {
 
     public Mono<Void> updateUserInfo(String authToken, UpdateUserRequestDto updateDto) {
         var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
         updateDto.setId(userId);
         checkDuplicate(updateDto.getEmail(), userId);
 
@@ -106,7 +115,7 @@ public class UserService {
                 .then();
     }
 
-    private void checkDuplicate(String email, Long userId) {
+    private void checkDuplicate(String email, UUID userId) {
 
         var checkDuplicate = db.execute(ctx -> userRepo.countUsersByEmail(ctx, email, userId) != 0);
         if (checkDuplicate) {
@@ -117,7 +126,7 @@ public class UserService {
 
     public Mono<Void> uploadAvatar(String authToken, MultipartFile image) throws Exception {
         var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
         var user = db.execute(ctx -> userRepo.getById(ctx, userId));
         if (image == null) {
             if (user.getAvatar() != null) {
@@ -133,7 +142,7 @@ public class UserService {
 
     public Mono<Void> deletedAvatar(String authToken) {
         var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
 
         var avatarPath = db.execute(ctx -> userRepo.getAvatarPath(ctx, userId));
 
@@ -144,7 +153,7 @@ public class UserService {
 
     public Mono<FileSystemResource> getAvatar(String authToken) {
         var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = UUID.fromString(jwtService.getUserIdFromJwt(jwt));
         var avatarPath = db.execute(ctx -> userRepo.getAvatarPath(ctx, userId));
         if (avatarPath != null) {
             FileSystemResource avatarFile = fileSystemRepository.findInFileSystem(avatarPath);
@@ -152,5 +161,24 @@ public class UserService {
         } else {
             return Mono.empty();
         }
+    }
+
+    public Mono<PaginatedResponseDto<UserWithFieldsOfActivityResponseDto>> getPaginated(int offset, int limit) {
+        return db.execAsync(ctx -> {
+            var tuple = userRepo.getPaginated(ctx, offset, limit);
+
+            var listUser = tuple.getT2();
+            var totalCount = tuple.getT1();
+
+            listUser.forEach(record -> {
+                record.setFieldOfActivitys(fieldOfActivityRepository.getListFieldOfActivityByUserId(ctx, record.getId()));
+            });
+
+            return PaginatedResponseDto.<UserWithFieldsOfActivityResponseDto>builder()
+                    .totalCount(totalCount)
+                    .result(listUser)
+                    .count(listUser.size())
+                    .build();
+        });
     }
 }

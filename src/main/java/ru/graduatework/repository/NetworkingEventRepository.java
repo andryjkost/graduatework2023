@@ -3,20 +3,24 @@ package ru.graduatework.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.impl.DSL;
+import org.jooq.util.postgres.PostgresDSL;
 import org.springframework.stereotype.Repository;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 import ru.graduatework.common.NetworkingEventPaginatedFilter;
 import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.common.Utils;
-import ru.graduatework.controller.dto.NetworkingEventRequestDto;
-import ru.graduatework.controller.dto.NetworkingEventResponseDto;
-import ru.graduatework.controller.dto.PaginatedResponseDto;
 import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.AuthorNetworkingEventRecord;
 import ru.graduatework.jooq.tables.records.NetworkingEventRecord;
 import ru.graduatework.model.AuthorShortModel;
+import ru.graduatework.model.NetworkingEventModel;
 
-import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static ru.graduatework.common.NetworkingEventStatus.*;
 import static ru.graduatework.jooq.Tables.*;
@@ -26,56 +30,105 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class NetworkingEventRepository {
 
-    public NetworkingEventResponseDto getById(PostgresOperatingContext ctx, Long id) {
-        return ctx.dsl().select(NETWORKING_EVENT.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
+    private final static String userIdAlias = "USER_IDS";
+
+    public String getAvatarPathById(PostgresOperatingContext ctx, UUID id) {
+        return ctx.dsl().select(NETWORKING_EVENT.PATH_AVATAR)
+                .from(NETWORKING_EVENT)
+                .where(NETWORKING_EVENT.ID.eq(id))
+                .fetchOneInto(String.class);
+    }
+
+    public NetworkingEventModel getById(PostgresOperatingContext ctx, UUID id, UUID userId) {
+        return ctx.dsl().select(
+                        NETWORKING_EVENT.ID,
+                        NETWORKING_EVENT.TITLE,
+                        NETWORKING_EVENT.DESCRIPTION,
+                        NETWORKING_EVENT.LINK,
+                        NETWORKING_EVENT.START_TIME,
+                        NETWORKING_EVENT.STATUS,
+                        NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS,
+                        NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS,
+                        NETWORKING_EVENT.PATH_AVATAR,
+                        NETWORKING_EVENT.DURATION_OF_EVENT,
+                        AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME,
+                        DSL.arrayAggDistinct(USER.ID).as(userIdAlias))
                 .from(NETWORKING_EVENT
                         .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
-                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID)))
+                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
+                        .leftJoin(USER_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID))
+                        .leftJoin(USER).on(USER_NETWORKING_EVENT.USER_ID.eq(USER.ID)))
                 .where(NETWORKING_EVENT.ID.eq(id))
-                .fetchOne(record -> NetworkingEventResponseDto.builder()
-                        .id((Long) record.get(0))
-                        .title((String) record.get(1))
-                        .description((String) record.get(2))
-                        .link((String) record.get(3))
-                        .startTime((OffsetDateTime) record.get(4))
-                        .status(NetworkingEventStatus.valueOf((String) record.get(5)))
-                        .maximumNumberOfParticipants((Long) record.get(6))
-                        .numberOfAvailableSeats((Long) record.get(7))
+                .groupBy(NETWORKING_EVENT.ID, AUTHOR.ID)
+                .fetchOne(record -> NetworkingEventModel.builder()
+                        .id(record.get(NETWORKING_EVENT.ID))
+                        .title(record.get(NETWORKING_EVENT.TITLE))
+                        .description(record.get(NETWORKING_EVENT.DESCRIPTION))
+                        .link(record.get(NETWORKING_EVENT.LINK))
+                        .startTime(record.get(NETWORKING_EVENT.START_TIME))
+                        .durationOfEvent(record.get(NETWORKING_EVENT.DURATION_OF_EVENT))
+                        .status(NetworkingEventStatus.valueOf((record.get(NETWORKING_EVENT.STATUS))))
+                        .userSubscribedIds(Arrays.stream(record.get(userIdAlias, UUID[].class)).filter(Objects::nonNull).collect(Collectors.toList()))
+                        .maximumNumberOfParticipants(record.get(NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS))
+                        .numberOfAvailableSeats(record.get(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS))
+                        .pathToAvatar((record.get(NETWORKING_EVENT.PATH_AVATAR)))
+                        .userId(userId)
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((Long) record.get(9))
-                                .firstLastName(Utils.getFullName((String) record.get(10), (String) record.get(11)))
+                                .id(record.get(AUTHOR.ID))
+                                .firstLastName(Utils.getFullName(record.get(AUTHOR.LAST_NAME), record.get(AUTHOR.FIRST_NAME)))
                                 .build())
                         .build());
     }
 
-    public PaginatedResponseDto<NetworkingEventResponseDto> getPaginatedListOfEvents(PostgresOperatingContext ctx, NetworkingEventPaginatedFilter filter) {
+    public Tuple2<Integer, List<NetworkingEventModel>> getPaginatedListOfEvents(PostgresOperatingContext ctx, NetworkingEventPaginatedFilter filter) {
+
+        var userIdAlias = "USER_ID";
+        var userSubselectAlias = "userSubselectAlias";
+
         var filterCondition = DSL.noCondition();
+
+        final var userSubselect = ctx.dsl()
+                .select(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID, DSL.arrayAggDistinct(USER.ID).as(userIdAlias))
+                .from(USER_NETWORKING_EVENT.leftJoin(USER).on(USER_NETWORKING_EVENT.USER_ID.eq(USER.ID)))
+                .groupBy(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID).asTable(userSubselectAlias);
+
+
         if (filter.getStatus() != null) {
             filterCondition = filterCondition.and(NETWORKING_EVENT.STATUS.eq(filter.getStatus().name()));
         }
 
-        if (filter.getEventSubscriptionFlag() != null) {
-            if (filter.getEventSubscriptionFlag()) {
-                filterCondition = filterCondition.and(USER_NETWORKING_EVENT.USER_ID.eq(filter.getUserId()));
-            } else {
-                filterCondition = filterCondition.and(USER_NETWORKING_EVENT.USER_ID.notEqual(filter.getUserId()));
-            }
-        }
+//        not(exists(selectOne().from(table(values(a))).intersect(selectOne().from(table(values(b))))));
+//
+//        if (filter.getEventSubscriptionFlag() != null) {
+//            if (filter.getEventSubscriptionFlag()) {
+//                filterCondition = filterCondition.and(PostgresDSL.arrayOverlap(userSubselect.field(userIdAlias, UUID[].class), new UUID[]{filter.getUserId()}));
+//            } else {
+//                filterCondition = filterCondition.and(DSL.not(DSL.exists(DSL.selectOne().)));
+//            }
+//        }
 
-        var selectQuery = ctx.dsl().select(NETWORKING_EVENT.asterisk(), AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
-                .from(NETWORKING_EVENT
+        var selectQuery = ctx.dsl()
+                .select(NETWORKING_EVENT.ID,
+                        NETWORKING_EVENT.TITLE, NETWORKING_EVENT.DESCRIPTION, NETWORKING_EVENT.LINK,
+                        NETWORKING_EVENT.START_TIME, NETWORKING_EVENT.DURATION_OF_EVENT,
+                        NETWORKING_EVENT.STATUS, NETWORKING_EVENT.STATUS,
+                        NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS, NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS,
+                        NETWORKING_EVENT.PATH_AVATAR,
+                        userSubselect.field(userIdAlias),
+                        AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
+                .from(NETWORKING_EVENT)
                         .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
                         .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
-                        .leftJoin(USER_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID)));
+                        .leftJoin(userSubselect)
+                        .on(NETWORKING_EVENT.ID.eq(userSubselect.field(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID)))
+                .where(filterCondition);
 
         var totalCount = ctx.dsl()
                 .selectCount()
                 .from(selectQuery)
-                .where(filterCondition)
                 .fetchOneInto(Integer.class);
 
         var listNetworkingEvent = selectQuery
-                .where(filterCondition)
                 .orderBy(
                         NETWORKING_EVENT.START_TIME.asc(),
                         DSL.case_()
@@ -85,54 +138,55 @@ public class NetworkingEventRepository {
                 )
                 .offset(filter.getOffset())
                 .limit(filter.getLimit() > 0 ? filter.getLimit() : null)
-                .fetch().map(record -> NetworkingEventResponseDto.builder()
-                        .id((Long) record.get(0))
-                        .title((String) record.get(1))
-                        .description((String) record.get(2))
-                        .link((String) record.get(3))
-                        .startTime((OffsetDateTime) record.get(4))
-                        .status(NetworkingEventStatus.valueOf((String) record.get(5)))
-                        .maximumNumberOfParticipants((Long) record.get(6))
-                        .numberOfAvailableSeats((Long) record.get(7))
+                .fetch().map(record -> NetworkingEventModel.builder()
+                        .id(record.get(NETWORKING_EVENT.ID))
+                        .title(record.get(NETWORKING_EVENT.TITLE))
+                        .description(record.get(NETWORKING_EVENT.DESCRIPTION))
+                        .link(record.get(NETWORKING_EVENT.LINK))
+                        .startTime(record.get(NETWORKING_EVENT.START_TIME))
+                        .status(NetworkingEventStatus.valueOf(record.get(NETWORKING_EVENT.STATUS)))
+                        .maximumNumberOfParticipants(record.get(NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS))
+                        .numberOfAvailableSeats(record.get(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS))
+                        .pathToAvatar(record.get(NETWORKING_EVENT.PATH_AVATAR))
                         .authorShortModel(AuthorShortModel.builder()
-                                .id((Long) record.get(8))
-                                .firstLastName(Utils.getFullName((String) record.get(9), (String) record.get(10)))
+                                .id(record.get(AUTHOR.ID))
+                                .firstLastName(Utils.getFullName(record.get(AUTHOR.LAST_NAME), record.get(AUTHOR.FIRST_NAME)))
                                 .build())
                         .build());
 
-
-        return PaginatedResponseDto.<NetworkingEventResponseDto>builder()
-                .totalCount(totalCount)
-                .count(listNetworkingEvent.size())
-                .result(listNetworkingEvent)
-                .build();
+        return Tuples.of(totalCount, listNetworkingEvent);
     }
 
-    public void createNetworkingEvent(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, Long authorId) {
+    public void createNetworkingEvent(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, UUID authorId) {
 
         var newNetworkingEvent = ctx.dsl().insertInto(NETWORKING_EVENT).set(networkingEventRecord).returning().fetchOne();
 
 
         AuthorNetworkingEventRecord newAuthorNetworkingEventRecord = new AuthorNetworkingEventRecord();
-        newAuthorNetworkingEventRecord.setId(UUID.randomUUID().getLeastSignificantBits());
+        newAuthorNetworkingEventRecord.setId(UUID.randomUUID());
         newAuthorNetworkingEventRecord.setAuthorId(authorId);
         newAuthorNetworkingEventRecord.setNetworkingEventId(newNetworkingEvent.getId());
 
         ctx.dsl().insertInto(AUTHOR_NETWORKING_EVENT).set(newAuthorNetworkingEventRecord).execute();
     }
 
-    public void addAvatar(PostgresOperatingContext ctx, String path, Long id) {
+    public void addAvatar(PostgresOperatingContext ctx, String path, UUID id) {
         ctx.dsl().update(NETWORKING_EVENT)
                 .set(NETWORKING_EVENT.PATH_AVATAR, path)
                 .where(NETWORKING_EVENT.ID.eq(id)).execute();
 
     }
 
-    public boolean update(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, Long id) {
+    public boolean update(PostgresOperatingContext ctx, NetworkingEventRecord networkingEventRecord, UUID id) {
         return ctx.dsl().update(NETWORKING_EVENT)
                 .set(networkingEventRecord)
                 .where(NETWORKING_EVENT.ID.eq(id))
                 .execute() == 1;
     }
 
+    public void setNumberOfAvailableSeats(PostgresOperatingContext ctx, UUID id, Long numberOfAvailableSeats) {
+        ctx.dsl().update(NETWORKING_EVENT)
+                .set(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS, numberOfAvailableSeats)
+                .where(NETWORKING_EVENT.ID.eq(id)).execute();
+    }
 }

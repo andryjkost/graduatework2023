@@ -45,7 +45,7 @@
             </not>
         </preConditions>
         <createTable tableName="chapter" remarks="Раздел курса" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
             <column name="title" type="VARCHAR(100)" remarks="Название">
@@ -64,13 +64,13 @@
             </not>
         </preConditions>
         <createTable tableName="course_chapter" remarks="Связка курса и его разделов" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="course_id" type="BIGINT">
+            <column name="course_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="chapter_id" type="BIGINT">
+            <column name="chapter_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
             <column name="priority_number_of_the_section_in_the_course" remarks="Порядковый номер раздела в курсе" type="BIGINT">
@@ -103,7 +103,7 @@
             </not>
         </preConditions>
         <createTable tableName="topic" remarks="Тема" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
             <column name="title" type="VARCHAR(100)" remarks="Название">
@@ -125,13 +125,13 @@
             </not>
         </preConditions>
         <createTable tableName="chapter_topic" remarks="Связка раздела и его тем" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="topic_id" type="BIGINT">
+            <column name="topic_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="chapter_id" type="BIGINT">
+            <column name="chapter_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
             <column name="priority_number_of_the_section_in_the_chapter"  remarks="Порядковый номер темы в разделе" type="BIGINT">

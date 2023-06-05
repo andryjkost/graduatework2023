@@ -22,7 +22,7 @@ public class TokenService {
     private final PostgresOperatingDb db;
     private final TokenRepository tokenRepository;
 
-    public void deleteByUserId(Long userId) {
+    public void deleteByUserId(UUID userId) {
         db.execute(ctx -> {
             ctx.dsl().transaction(tctx -> tokenRepository.deleteByUserId(ctx, userId));
             return true;
@@ -37,11 +37,11 @@ public class TokenService {
         return db.execute(ctx-> tokenRepository.getByToken(ctx, token));
     }
 
-    public void saveRefreshToken(Long userId, String jwtRefreshToken) {
+    public void saveRefreshToken(UUID userId, String jwtRefreshToken) {
 
         TokenRecord newToken = new TokenRecord();
 
-        newToken.setId(UUID.randomUUID().getLeastSignificantBits());
+        newToken.setId(UUID.randomUUID());
         newToken.setUserId(userId);
         newToken.setToken(jwtRefreshToken);
         newToken.setTokentype(TokenType.BEARER.toString());

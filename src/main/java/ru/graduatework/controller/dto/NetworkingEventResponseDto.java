@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.model.AuthorShortModel;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +20,7 @@ import java.time.OffsetDateTime;
 @Schema(description = "Нетворкинг мероприятие")
 public class NetworkingEventResponseDto {
     @Schema(description = "id мероприятия")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Название мероприятия")
     private String title;
@@ -32,6 +34,12 @@ public class NetworkingEventResponseDto {
     @Schema(description = "Время начала мероприятия")
     private OffsetDateTime startTime;
 
+    @Schema(description = "Длительность мероприятия")
+    private LocalTime durationOfEvent;
+
+    @Schema(description = "Флаг подписки юзера на мероприятие")
+    private Boolean eventSubscriptionFlag;
+
     @Schema(description = "Статус мероприятия")
     private NetworkingEventStatus status;
 
@@ -40,6 +48,9 @@ public class NetworkingEventResponseDto {
 
     @Schema(description = "Кол-во свободных мест")
     private Long numberOfAvailableSeats;
+
+    @Schema(description = "Картинка")
+    private byte[] image;
 
     @Schema(description = "Инфа об авторе")
     private AuthorShortModel authorShortModel;

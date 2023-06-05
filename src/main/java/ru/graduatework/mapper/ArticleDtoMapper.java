@@ -19,11 +19,13 @@ public interface ArticleDtoMapper {
     @Mapping(target = "timeOfCreationOrModification", expression = "java(OffsetDateTime.now())" )
     ArticleRecord mapToUpdate(UpdateArticleRequestDto updateArticleRequestDto);
 
-    @Mapping(target = "id", expression = "java(UUID.randomUUID().getLeastSignificantBits())")
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     ArticleRecord mapToCreate(ArticleRequestDto articleRequestDto);
 
     //    @Mapping(target = "timeModification", source = "timeOfCreationOrModification")
     ArticleResponseDto map(ArticleWithAuthorModel articleRecord);
+
+    ArticleShortResponseDto mapShort(ArticleWithAuthorModel articleRecord);
 
     ArticleShortResponseDto mapShort(ArticleRecord articleRecord);
 

@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 import ru.graduatework.controller.dto.*;
 import ru.graduatework.service.ArticleService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/article")
 @RequiredArgsConstructor
@@ -33,14 +35,14 @@ public class ArticleController {
     @Operation(summary = "Получение статьи по id")
     @GetMapping("/{articleId}")
     Mono<ArticleResponseDto> getArticleById(
-            @Parameter(description = "Идентификатор статьи") @PathVariable Long articleId
+            @Parameter(description = "Идентификатор статьи") @PathVariable UUID articleId
     ) {
         return articleService.getArticleById(articleId);
     }
 
     @Operation(summary = "Создание статьи")
     @PostMapping("")
-    Mono<Void> createArticle(
+    Mono<UUID> createArticle(
             @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
             @RequestBody ArticleRequestDto requestDto
     ) {

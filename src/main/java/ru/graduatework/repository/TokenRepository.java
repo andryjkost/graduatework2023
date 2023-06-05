@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import ru.graduatework.jdbc.PostgresOperatingContext;
 import ru.graduatework.jooq.tables.records.TokenRecord;
 
+import java.util.UUID;
+
 import static ru.graduatework.jooq.Tables.TOKEN;
 import static ru.graduatework.jooq.Tables.USER;
 
@@ -15,7 +17,7 @@ import static ru.graduatework.jooq.Tables.USER;
 public class TokenRepository {
 
     //У делита и гета добавить фильтр по истечению как в бд появится поле
-    public void deleteByUserId(PostgresOperatingContext ctx, Long userId){
+    public void deleteByUserId(PostgresOperatingContext ctx, UUID userId){
         ctx.dsl().deleteFrom(TOKEN).where(TOKEN.USER_ID.eq(userId)).execute();
     }
 

@@ -4,12 +4,15 @@ import lombok.Builder;
 import lombok.Data;
 import ru.graduatework.common.NetworkingEventStatus;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
 public class NetworkingEventModel {
-    private Long id;
+    private UUID id;
 
     private String title;
 
@@ -19,11 +22,19 @@ public class NetworkingEventModel {
 
     private OffsetDateTime startTime;
 
+    private LocalTime durationOfEvent;
+
+    private List<UUID> userSubscribedIds;
+
     private NetworkingEventStatus status;
 
-    private String maximumNumberOfParticipants;
+    private Long maximumNumberOfParticipants;
 
-    private String numberOfAvailableSeats;
-    private Long authorId;
-    private String authorFirstLastNames;
+    private Long numberOfAvailableSeats;
+
+    private String pathToAvatar;
+
+    private AuthorShortModel authorShortModel;
+
+    private UUID userId;
 }

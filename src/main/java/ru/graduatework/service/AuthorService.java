@@ -38,12 +38,12 @@ public class AuthorService {
 
         requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        var newUserId = UUID.randomUUID().getLeastSignificantBits();
+        var newUserId = UUID.randomUUID();
 
         //потом добавить кто создал
         AuthorRecord newAuthor = new AuthorRecord();
 
-        newAuthor.setId((UUID.randomUUID().getLeastSignificantBits()));
+        newAuthor.setId((UUID.randomUUID()));
         newAuthor.setEmail(requestDto.getEmail());
         newAuthor.setFirstName(requestDto.getFirstname());
         newAuthor.setLastName(requestDto.getLastname());
@@ -77,7 +77,7 @@ public class AuthorService {
                 .build());
     }
 
-    public AuthorRecord getByUserId(Long userId) {
+    public AuthorRecord getByUserId(UUID userId) {
         return db.execute(ctx -> authorRepository.getByUserId(ctx, userId));
     }
 

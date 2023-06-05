@@ -1,0 +1,55 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_columns_in_course_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="course" columnName="category" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="course">
+            <column name="category" type="VARCHAR(125)" remarks="Категория"/>
+        </addColumn>
+        <addColumn tableName="course">
+            <column name="features" type="text[]" remarks=""/>
+        </addColumn>
+        <addColumn tableName="course">
+            <column name="link_payment" type="text" remarks="Ссылка на оплату курса"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_course_topic_table" author="aokostin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_topic" schemaName="graduatework"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_topic" remarks="Связка курсов и тем" schemaName="graduatework">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="topic_id" type="uuid"/>
+            <column name="course_id" type="uuid"/>
+            <column name="priority_number_of_the_section_in_the_course" remarks="Порядковый номер топика в курсе" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="topic_id"
+                                 baseTableName="course_topic"
+                                 constraintName="fk_course_topic_topic"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="topic"/>
+
+        <addForeignKeyConstraint baseColumnNames="course_id"
+                                 baseTableName="course_topic"
+                                 constraintName="fk_course_topic_course"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course"/>
+    </changeSet>
+</databaseChangeLog>

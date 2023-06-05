@@ -7,13 +7,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ru.graduatework.common.Role;
 
 import java.util.Collection;
+import java.util.UUID;
 
 
 @NoArgsConstructor
 @Data
 public class UserWithRoleResponseDto implements UserDetails {
 
-    private Long id;
+    private UUID id;
     private String email;
     private String firstName;
     private String lastName;

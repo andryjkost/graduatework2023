@@ -14,8 +14,10 @@ import ru.graduatework.mapper.ArticleDtoMapper;
 import ru.graduatework.repository.ArticleRepository;
 import ru.graduatework.repository.AuthorArticleRepository;
 import ru.graduatework.repository.AuthorRepository;
+import ru.graduatework.repository.CourseRepository;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import static ru.graduatework.error.Code.NOT_AUTHOR_THIS_ARTICLE;
 
@@ -28,14 +30,14 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final AuthorRepository authorRepository;
     private final AuthorArticleRepository authorArticleRepository;
+    private final CourseRepository courseRepository;
 
     private final JwtService jwtService;
 
     private final ArticleDtoMapper articleDtoMapper;
 
     public Mono<Boolean> updateArticle(String authToken, UpdateArticleRequestDto requestDto) {
-        var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+        var userId = jwtService.getUserIdByToken(authToken.substring(7));
         var articleRecord = articleDtoMapper.mapToUpdate(requestDto);
         return db.execAsync(ctx -> {
             var authorId = authorRepository.getByUserId(ctx, userId).getId();
@@ -57,23 +59,39 @@ public class ArticleService {
     }
 
     public Mono<PaginatedResponseDto<ArticleShortResponseDto>> getPaginatedShortArticle(int offset, int limit) {
-        return db.execAsync(ctx -> articleRepository.getPaginatedShortArticle(ctx, offset, limit));
+        return db.execAsync(ctx -> {
+            var tuple = articleRepository.getPaginatedShortArticle(ctx, offset, limit);
+            var dtos = tuple.getT2().stream().map(model -> {
+                var dto = articleDtoMapper.mapShort(model);
+                dto.setCourseInfoShortForArticleResponseDto(courseRepository.getByArticleId(ctx, model.getId()));
+                return dto;
+            }).toList();
+            return PaginatedResponseDto.<ArticleShortResponseDto>builder()
+                    .count(dtos.size())
+                    .totalCount(tuple.getT1())
+                    .result(dtos)
+                    .build();
+        });
 
     }
 
-    public Mono<ArticleResponseDto> getArticleById(Long articleId) {
-        return db.execAsync(ctx -> articleRepository.getById(ctx, articleId)).map(articleDtoMapper::map);
+    public Mono<ArticleResponseDto> getArticleById(UUID articleId) {
+        return db.execAsync(ctx -> {
+            var model = articleRepository.getById(ctx, articleId);
+            var dto = articleDtoMapper.map(model);
+            dto.setCourseInfoShortForArticleResponseDto(courseRepository.getByArticleId(ctx, articleId));
+            return dto;
+        });
     }
 
-    public Mono<Void> createArticle(String authToken, ArticleRequestDto requestDto) {
-        var jwt = authToken.substring(7);
-        var userId = Long.parseLong(jwtService.getUserIdFromJwt(jwt));
+    public Mono<UUID> createArticle(String authToken, ArticleRequestDto requestDto) {
+        var userId = jwtService.getUserIdByToken(authToken.substring(7));
 
         return db.execAsync(ctx -> {
             var newArticleId = articleRepository.createArticle(ctx, articleDtoMapper.mapToCreate(requestDto)).getId();
             var authorId = authorRepository.getByUserId(ctx, userId).getId();
             authorArticleRepository.createAuthorArticle(ctx, authorId, newArticleId);
-            return null;
+            return newArticleId;
         });
 
     }

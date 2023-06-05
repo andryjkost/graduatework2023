@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import ru.graduatework.model.AuthorShortModel;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +19,7 @@ import java.time.OffsetDateTime;
 public class ArticleResponseDto {
 
     @Schema(description = "ID")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Название статьи")
     private String title;
@@ -27,6 +29,9 @@ public class ArticleResponseDto {
 
     @Schema(description = "Время последнего изменения")
     private OffsetDateTime timeModification;
+
+    @Schema(description = "Связанные курсы")
+    private List<CourseInfoShortForArticleResponseDto> courseInfoShortForArticleResponseDto;
 
     @Schema(description = "Автор")
     private AuthorShortModel authorShortModel;

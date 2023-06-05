@@ -13,6 +13,8 @@ import ru.graduatework.common.NetworkingEventStatus;
 import ru.graduatework.controller.dto.*;
 import ru.graduatework.service.NetworkingEventService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/networking_event")
 @RequiredArgsConstructor
@@ -55,21 +57,23 @@ public class NetworkingEventController {
     }
 
     @Operation(summary = "Редактирование мероприятий тут если поле нулл - то зануллит")
-    @PutMapping("")
+    @PutMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Mono<Boolean> updateNetworkingEvent(
-            @RequestBody UpdateNetworkingEventRequestDto requestDto
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @ModelAttribute UpdateNetworkingEventRequestDto requestDto
     ) {
 
-        return service.update(requestDto);
+        return service.update(authToken, requestDto);
     }
 
     @Operation(summary = "Получение мероприятия по id")
     @GetMapping("/{id}")
     Mono<NetworkingEventResponseDto> getNetworkingEventById(
-            @Parameter(description = "Идентификатор мероприятия") @PathVariable Long id
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @Parameter(description = "Идентификатор мероприятия") @PathVariable UUID id
     ) {
 
-        return service.getById(id);
+        return service.getById(authToken, id);
     }
 
     @Operation(summary = "Получение мероприятий за период")
@@ -77,6 +81,15 @@ public class NetworkingEventController {
     Mono<PaginatedResponseDto<NetworkingEventResponseDto>> getNetworkingEventByDate() {
 
         return Mono.empty();
+    }
+
+    @Operation(summary = "Записаться на мероприятие по id")
+    @PostMapping("/{id}/sign_up")
+    Mono<Boolean> signUpForEventById(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) @Parameter(hidden = true) String authToken,
+            @Parameter(description = "Идентификатор мероприятия") @PathVariable UUID id
+    ) {
+        return service.signUpForEventById(authToken, id);
     }
 
 }

@@ -10,7 +10,7 @@
             </not>
         </preConditions>
         <createTable tableName="field_of_activity" remarks="Таблица сфер интересов" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
             <column name="name" type="VARCHAR(255)" remarks="Название сферы интересов">
@@ -27,11 +27,11 @@
             </not>
         </preConditions>
         <createTable tableName="user_field_of_activity" remarks="Связка сферы интересов и юзеров" schemaName="graduatework">
-            <column name="id" type="BIGINT">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
-            <column name="user_id" type="BIGINT"/>
-            <column name="field_of_activity_id" type="BIGINT"/>
+            <column name="user_id" type="uuid"/>
+            <column name="field_of_activity_id" type="uuid"/>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="user_id"

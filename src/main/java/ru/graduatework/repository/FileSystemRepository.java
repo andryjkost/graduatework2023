@@ -12,6 +12,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import static ru.graduatework.error.Code.FILE_CREATION_ERROR;
 
@@ -30,7 +31,7 @@ public class FileSystemRepository {
     @Value("${file-system.storage.video}")
     private String dirVideoByCourse;
 
-    public String save(byte[] content, Long id, FlagFile flagFile) throws Exception {
+    public String save(byte[] content, UUID id, FlagFile flagFile) throws Exception {
 
         Path newFile;
 

@@ -9,6 +9,8 @@ import ru.graduatework.jooq.tables.records.RoleRecord;
 import ru.graduatework.common.Role;
 
 
+import java.util.UUID;
+
 import static ru.graduatework.jooq.Tables.*;
 
 @Slf4j
@@ -16,7 +18,7 @@ import static ru.graduatework.jooq.Tables.*;
 @RequiredArgsConstructor
 public class RoleRepository {
 
-    public Role getRoleByUserId(PostgresOperatingContext ctx, Long id) {
+    public Role getRoleByUserId(PostgresOperatingContext ctx, UUID id) {
         var role = ctx.dsl()
                 .selectFrom(ROLE.join(USER_ROLE).on(ROLE.ID.eq(USER_ROLE.ROLE_ID).and(USER_ROLE.USER_ID.eq(id))))
                 .fetchOneInto(RoleRecord.class);
