@@ -117,10 +117,10 @@ public class NetworkingEventRepository {
                         userSubselect.field(userIdAlias),
                         AUTHOR.ID, AUTHOR.LAST_NAME, AUTHOR.FIRST_NAME)
                 .from(NETWORKING_EVENT)
-                        .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
-                        .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
-                        .leftJoin(userSubselect)
-                        .on(NETWORKING_EVENT.ID.eq(userSubselect.field(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID)))
+                .leftJoin(AUTHOR_NETWORKING_EVENT).on(NETWORKING_EVENT.ID.eq(AUTHOR_NETWORKING_EVENT.NETWORKING_EVENT_ID))
+                .leftJoin(AUTHOR).on(AUTHOR_NETWORKING_EVENT.AUTHOR_ID.eq(AUTHOR.ID))
+                .leftJoin(userSubselect)
+                .on(NETWORKING_EVENT.ID.eq(userSubselect.field(USER_NETWORKING_EVENT.NETWORKING_EVENT_ID)))
                 .where(filterCondition);
 
         var totalCount = ctx.dsl()
@@ -146,13 +146,15 @@ public class NetworkingEventRepository {
                         .startTime(record.get(NETWORKING_EVENT.START_TIME))
                         .status(NetworkingEventStatus.valueOf(record.get(NETWORKING_EVENT.STATUS)))
                         .maximumNumberOfParticipants(record.get(NETWORKING_EVENT.MAXIMUM_NUMBER_OF_PARTICIPANTS))
-                        .numberOfAvailableSeats(record.get(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS))
-                        .pathToAvatar(record.get(NETWORKING_EVENT.PATH_AVATAR))
-                        .authorShortModel(AuthorShortModel.builder()
-                                .id(record.get(AUTHOR.ID))
-                                .firstLastName(Utils.getFullName(record.get(AUTHOR.LAST_NAME), record.get(AUTHOR.FIRST_NAME)))
-                                .build())
-                        .build());
+                        .userSubscribedIds(record.get(userSubselect.field(userIdAlias)) != null ? Arrays.stream(record.get(userSubselect.field(userIdAlias), UUID[].class)).filter(Objects::nonNull).collect(Collectors.toList()) : List.of())
+                        .userId(filter.getUserId())
+                                .numberOfAvailableSeats(record.get(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS))
+                                .pathToAvatar(record.get(NETWORKING_EVENT.PATH_AVATAR))
+                                .authorShortModel(AuthorShortModel.builder()
+                                        .id(record.get(AUTHOR.ID))
+                                        .firstLastName(Utils.getFullName(record.get(AUTHOR.LAST_NAME), record.get(AUTHOR.FIRST_NAME)))
+                                        .build())
+                                .build());
 
         return Tuples.of(totalCount, listNetworkingEvent);
     }
@@ -188,5 +190,9 @@ public class NetworkingEventRepository {
         ctx.dsl().update(NETWORKING_EVENT)
                 .set(NETWORKING_EVENT.NUMBER_OF_AVAILABLE_SEATS, numberOfAvailableSeats)
                 .where(NETWORKING_EVENT.ID.eq(id)).execute();
+    }
+
+    public List<NetworkingEventModel> getList(PostgresOperatingContext ctx) {
+        return null;
     }
 }
