@@ -192,7 +192,7 @@ public class NetworkingEventRepository {
                 .where(NETWORKING_EVENT.ID.eq(id)).execute();
     }
 
-    public List<NetworkingEventModel> getList(PostgresOperatingContext ctx) {
-        return null;
+    public List<NetworkingEventRecord> getList(PostgresOperatingContext ctx) {
+        return ctx.dsl().selectFrom(NETWORKING_EVENT).fetch();
     }
 }
